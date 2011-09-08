@@ -209,7 +209,7 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		7FFF25AC085E488700266176 /* Development */ = {
+		7FFF25AC085E488700266176 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -235,7 +235,7 @@
 				WRAPPER_EXTENSION = qsplugin;
 				ZERO_LINK = NO;
 			};
-			name = Development;
+			name = Debug;
 		};
 		7FFF25AD085E488700266176 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -264,39 +264,14 @@
 			};
 			name = Release;
 		};
-		7FFF25AE085E488700266176 /* Default */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
-				FRAMEWORK_SEARCH_PATHS = (
-					/System/Library/PrivateFrameworks,
-					"~/Library/Frameworks",
-					"$(BUILT_PRODUCTS_DIR)",
-				);
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = QSUIAccessPlugIn_Prefix.pch;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "$(HOME)/Developer/Palettes";
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				OTHER_LDFLAGS = "-bundle";
-				PRODUCT_NAME = "UI Access";
-				QS_BUILD_ROOT = /tmp/QS;
-				SYMROOT = "$(QS_BUILD_ROOT)/build";
-				WRAPPER_EXTENSION = qsplugin;
-			};
-			name = Default;
-		};
-		7FFF25B0085E488700266176 /* Development */ = {
+		7FFF25B0085E488700266176 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				SDKROOT = "";
 			};
-			name = Development;
+			name = Debug;
 		};
 		7FFF25B1085E488700266176 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -307,37 +282,26 @@
 			};
 			name = Release;
 		};
-		7FFF25B2085E488700266176 /* Default */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				SDKROOT = "";
-			};
-			name = Default;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		7FFF25AB085E488700266176 /* Build configuration list for PBXNativeTarget "UI Access" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7FFF25AC085E488700266176 /* Development */,
+				7FFF25AC085E488700266176 /* Debug */,
 				7FFF25AD085E488700266176 /* Release */,
-				7FFF25AE085E488700266176 /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Default;
+			defaultConfigurationName = Release;
 		};
 		7FFF25AF085E488700266176 /* Build configuration list for PBXProject "QSUIAccessPlugIn" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7FFF25B0085E488700266176 /* Development */,
+				7FFF25B0085E488700266176 /* Debug */,
 				7FFF25B1085E488700266176 /* Release */,
-				7FFF25B2085E488700266176 /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Default;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
