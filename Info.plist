@@ -19,7 +19,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>2.0</string>
 	<key>CFBundleVersion</key>
-	<string>1D7</string>
+	<string>1DA</string>
 	<key>NSPrincipalClass</key>
 	<string>QSUIAccessPlugIn</string>
 	<key>QSActions</key>
@@ -456,7 +456,7 @@
 			<key>CurrentDocument</key>
 			<dict>
 				<key>icon</key>
-				<string>Document</string>
+				<string>GenericDocumentIcon</string>
 				<key>name</key>
 				<string>Current Document</string>
 				<key>providerClass</key>

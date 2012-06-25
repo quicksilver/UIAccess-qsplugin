@@ -241,7 +241,6 @@ void PressButtonInWindow(id buttonName, id window)
   return nil;
 }
 
-
 - (NSArray *)validIndirectObjectsForAction:(NSString *)action directObject:(QSObject *)dObject{
 	if ([action isEqualToString:@"QSPickMenuItemsAction"]){
 	  dObject = [self resolvedProxy:dObject];
@@ -330,7 +329,10 @@ void PressButtonInWindow(id buttonName, id window)
   AXUIElementRef window = nil;
   AXUIElementCopyAttributeValue(app, kAXFocusedWindowAttribute, &window);
   [(id)window autorelease];
-  return [self firstDocumentObjectForElement:window depth:3 title:nil];
+    if ([self firstDocumentObjectForElement:window depth:3 title:nil]) {
+        return [self firstDocumentObjectForElement:window depth:3 title:nil];
+    }
+    return nil;
 }
 
 - (QSObject *)firstDocumentObjectForElement:(AXUIElementRef)element depth:(NSInteger)depth title:(NSString *)title
