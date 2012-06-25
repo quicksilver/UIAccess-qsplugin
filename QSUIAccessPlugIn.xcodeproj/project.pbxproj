@@ -13,13 +13,7 @@
 		7FDB743B0AA8B7C600CCE360 /* QSInterface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FDB74370AA8B7C600CCE360 /* QSInterface.framework */; };
 		8D1AC9700486D14A00FE50C9 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD92D38A0106425D02CA0E72 /* Cocoa.framework */; };
 		C92F30B6135F23F100B2D6FE /* WindowIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = C92F30B5135F23F100B2D6FE /* WindowIcon.png */; };
-		CDD8776D1598BEAF008C942A /* Common.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = CDD877651598BEAF008C942A /* Common.xcconfig */; };
-		CDD8776E1598BEAF008C942A /* Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = CDD877661598BEAF008C942A /* Debug.xcconfig */; };
-		CDD8776F1598BEAF008C942A /* Developer.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = CDD877671598BEAF008C942A /* Developer.xcconfig */; };
-		CDD877701598BEAF008C942A /* QSPlugIn.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = CDD877681598BEAF008C942A /* QSPlugIn.xcconfig */; };
-		CDD877711598BEAF008C942A /* QSPlugIn_Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = CDD877691598BEAF008C942A /* QSPlugIn_Debug.xcconfig */; };
-		CDD877721598BEAF008C942A /* QSPlugIn_Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = CDD8776A1598BEAF008C942A /* QSPlugIn_Release.xcconfig */; };
-		CDD877731598BEAF008C942A /* Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = CDD8776C1598BEAF008C942A /* Release.xcconfig */; };
+		CDD877761598C13B008C942A /* UniversalAccessPref.tiff in Resources */ = {isa = PBXBuildFile; fileRef = CDD877751598C13B008C942A /* UniversalAccessPref.tiff */; };
 		E11979880705ACA300D49C11 /* QSUIAccessPlugIn_Source.m in Sources */ = {isa = PBXBuildFile; fileRef = E1647F5A0705A7870033D4BF /* QSUIAccessPlugIn_Source.m */; };
 		E1647D710705A3620033D4BF /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1647D700705A3620033D4BF /* Carbon.framework */; };
 		E1647E610705A6120033D4BF /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1647E600705A6120033D4BF /* ApplicationServices.framework */; };
@@ -43,6 +37,7 @@
 		CDD8776A1598BEAF008C942A /* QSPlugIn_Release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = QSPlugIn_Release.xcconfig; sourceTree = "<group>"; };
 		CDD8776B1598BEAF008C942A /* Quicksilver.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Quicksilver.pch; sourceTree = "<group>"; };
 		CDD8776C1598BEAF008C942A /* Release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
+		CDD877751598C13B008C942A /* UniversalAccessPref.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = UniversalAccessPref.tiff; sourceTree = "<group>"; };
 		DD92D38A0106425D02CA0E72 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		E1647D700705A3620033D4BF /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		E1647E600705A6120033D4BF /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
@@ -88,6 +83,7 @@
 			isa = PBXGroup;
 			children = (
 				C92F30B5135F23F100B2D6FE /* WindowIcon.png */,
+				CDD877751598C13B008C942A /* UniversalAccessPref.tiff */,
 				8D1AC9730486D14A00FE50C9 /* Info.plist */,
 			);
 			name = Resources;
@@ -196,13 +192,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C92F30B6135F23F100B2D6FE /* WindowIcon.png in Resources */,
-				CDD8776D1598BEAF008C942A /* Common.xcconfig in Resources */,
-				CDD8776E1598BEAF008C942A /* Debug.xcconfig in Resources */,
-				CDD8776F1598BEAF008C942A /* Developer.xcconfig in Resources */,
-				CDD877701598BEAF008C942A /* QSPlugIn.xcconfig in Resources */,
-				CDD877711598BEAF008C942A /* QSPlugIn_Debug.xcconfig in Resources */,
-				CDD877721598BEAF008C942A /* QSPlugIn_Release.xcconfig in Resources */,
-				CDD877731598BEAF008C942A /* Release.xcconfig in Resources */,
+				CDD877761598C13B008C942A /* UniversalAccessPref.tiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
