@@ -10,10 +10,8 @@
 
 //#import <QSCore/QSSeparatorObject.h>
 #import <ApplicationServices/ApplicationServices.h>
-#import <QSCore/QSInterfaceMediator.h>
 #import "QSUIAccessPlugIn_Source.h"
 //#import <QSCore/QSMacros.h>
-#import <QSCore/QSTypes.h>
 
 @implementation QSUIAccessPlugIn_Action
 
@@ -22,7 +20,7 @@ NSArray *MenuItemsForElement(AXUIElementRef element, NSInteger depth, NSString *
   NSArray *children = nil;
   AXUIElementCopyAttributeValue(element, kAXChildrenAttribute, &children);
   [children autorelease];
-  NSInteger childrenCount = [children count];
+  NSUInteger childrenCount = [children count];
   if (childrenCount < 1 || childrenCount > 50 || depth < 1) {
     QSObject *menuObject = [QSObject objectForUIElement:element name:elementName process:process];
     return (menuObject) ? [NSArray arrayWithObject:menuObject] : [NSArray array];
