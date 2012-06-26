@@ -10,10 +10,8 @@
 
 //#import <QSCore/QSSeparatorObject.h>
 #import <ApplicationServices/ApplicationServices.h>
-#import <QSCore/QSInterfaceMediator.h>
 #import "QSUIAccessPlugIn_Source.h"
 //#import <QSCore/QSMacros.h>
-#import <QSCore/QSTypes.h>
 
 @implementation QSUIAccessPlugIn_Action
 
@@ -22,7 +20,7 @@ NSArray *MenuItemsForElement(AXUIElementRef element, NSInteger depth, NSString *
   NSArray *children = nil;
   AXUIElementCopyAttributeValue(element, kAXChildrenAttribute, &children);
   [children autorelease];
-  NSInteger childrenCount = [children count];
+  NSUInteger childrenCount = [children count];
   if (childrenCount < 1 || childrenCount > 50 || depth < 1) {
     QSObject *menuObject = [QSObject objectForUIElement:element name:elementName process:process];
     return (menuObject) ? [NSArray arrayWithObject:menuObject] : [NSArray array];
@@ -243,7 +241,6 @@ void PressButtonInWindow(id buttonName, id window)
   return nil;
 }
 
-
 - (NSArray *)validIndirectObjectsForAction:(NSString *)action directObject:(QSObject *)dObject{
 	if ([action isEqualToString:@"QSPickMenuItemsAction"]){
 	  dObject = [self resolvedProxy:dObject];
@@ -332,7 +329,10 @@ void PressButtonInWindow(id buttonName, id window)
   AXUIElementRef window = nil;
   AXUIElementCopyAttributeValue(app, kAXFocusedWindowAttribute, &window);
   [(id)window autorelease];
-  return [self firstDocumentObjectForElement:window depth:3 title:nil];
+    if ([self firstDocumentObjectForElement:window depth:3 title:nil]) {
+        return [self firstDocumentObjectForElement:window depth:3 title:nil];
+    }
+    return nil;
 }
 
 - (QSObject *)firstDocumentObjectForElement:(AXUIElementRef)element depth:(NSInteger)depth title:(NSString *)title
