@@ -14,7 +14,6 @@
 #define kCurrentFocusedWindowProxy @"CurrentFocusedWindow"
 #define kCurrentDocumentProxy @"CurrentDocument"
 
-//#import <QSCore/QSObject.h>
 #import "QSUIAccessPlugIn_Action.h"
 #define QSUIAccessPlugIn_Type @"QSUIAccessPlugIn_Type"
 @interface QSUIAccessPlugIn_Action : QSActionProvider {}
