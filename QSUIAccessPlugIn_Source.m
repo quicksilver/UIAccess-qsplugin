@@ -7,7 +7,6 @@
 //
 #import "QSUIAccessPlugIn_Action.h"
 #import "QSUIAccessPlugIn_Source.h"
-//#import <QSCore/QSMacros.h>
 
 @implementation QSUIAccessPlugIn_Source
 - (NSString *)identifierForObject:(id <QSObject>)object{
