@@ -8,10 +8,8 @@
 
 #import "QSUIAccessPlugIn_Action.h"
 
-//#import <QSCore/QSSeparatorObject.h>
 #import <ApplicationServices/ApplicationServices.h>
 #import "QSUIAccessPlugIn_Source.h"
-//#import <QSCore/QSMacros.h>
 
 @implementation QSUIAccessPlugIn_Action
 
@@ -64,6 +62,14 @@ NSArray *MenuItemsForElement(AXUIElementRef element, NSInteger depth, NSString *
 	return [self pickUIElement:iObject];
 }	
 
+- (BOOL)bypassValidation {
+	NSDictionary *appDictionary = [[NSWorkspace sharedWorkspace] activeApplication];
+	NSString *identifier = [appDictionary objectForKey:@"NSApplicationBundleIdentifier"];
+	if ([identifier isEqualToString:kQSBundleID])
+		return YES;
+	else
+		return NO;
+}
 
 - (QSObject *)searchAppMenus:(QSObject *)dObject{
   dObject = [self resolvedProxy:dObject];
