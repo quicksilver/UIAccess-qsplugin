@@ -156,7 +156,7 @@
 		0259C573FE90428111CA0C5A /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0410;
+				LastUpgradeCheck = 0450;
 			};
 			buildConfigurationList = 7FFF25AF085E488700266176 /* Build configuration list for PBXProject "QSUIAccessPlugIn" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -221,6 +221,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = CDD877681598BEAF008C942A /* QSPlugIn.xcconfig */;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				OTHER_LDFLAGS = "-bundle";
 				PRODUCT_NAME = "UI Access";
 			};
@@ -230,6 +231,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = CDD877681598BEAF008C942A /* QSPlugIn.xcconfig */;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				OTHER_LDFLAGS = "-bundle";
 				PRODUCT_NAME = "UI Access";
 			};
