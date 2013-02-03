@@ -15,47 +15,48 @@
 
 
 NSArray *MenuItemsForElement(AXUIElementRef element, NSInteger depth, NSString *elementName, NSInteger menuIgnoreDepth, NSDictionary *process) {
-  NSArray *children = nil;
-  AXUIElementCopyAttributeValue(element, kAXChildrenAttribute, &children);
-  [children autorelease];
-  NSUInteger childrenCount = [children count];
-  if (childrenCount < 1 || childrenCount > 50 || depth < 1) {
-    QSObject *menuObject = [QSObject objectForUIElement:element name:elementName process:process];
-    return (menuObject) ? [NSArray arrayWithObject:menuObject] : [NSArray array];
-  }
-  
-  NSMutableArray *menuItems = [NSMutableArray array];
-  BOOL menuSkipped = NO;
-  for (id child in children) {
-    CFTypeRef enabled = NULL;
-    if (AXUIElementCopyAttributeValue(child, kAXEnabledAttribute, &enabled) != kAXErrorSuccess) continue;
-    [enabled autorelease];
-    if (!CFBooleanGetValue(enabled)) continue;
-    CFStringRef name = nil;
-    
-    // try not to get the name attribute and test it unless we really have to
-    if ((menuIgnoreDepth > 2 && !menuSkipped) && (AXUIElementCopyAttributeValue(child, kAXTitleAttribute, &name) == kAXErrorSuccess))
-    {
-      [name autorelease];
-      if ([name isEqualToString:@"Apple"])
-      {
-        menuSkipped = YES;
-        continue;
-      }
+    NSArray *children = nil;
+    AXUIElementCopyAttributeValue(element, kAXChildrenAttribute, &children);
+    NSUInteger childrenCount = [children count];
+    if (childrenCount < 1 || childrenCount > 50 || depth < 1) {
+        QSObject *menuObject = [QSObject objectForUIElement:element name:elementName process:process];
+        return (menuObject) ? [NSArray arrayWithObject:menuObject] : [NSArray array];
     }
-    else if (menuIgnoreDepth > 0 && !menuSkipped && (AXUIElementCopyAttributeValue(child, kAXTitleAttribute, &name) == kAXErrorSuccess)) {
-      [name autorelease];
-      if ([name isEqualToString:@"Services"])
-      {
-        menuSkipped = YES;
-        continue;
-      }
+    NSMutableArray *menuItems = [NSMutableArray array];
+    BOOL menuSkipped = NO;
+    @autoreleasepool {
+        for (id child in children) {
+            CFTypeRef enabled = NULL;
+            if (AXUIElementCopyAttributeValue(child, kAXEnabledAttribute, &enabled) != kAXErrorSuccess) continue;
+            [enabled autorelease];
+            if (!CFBooleanGetValue(enabled)) continue;
+            NSString *name = nil;
+            
+            // try not to get the name attribute and test it unless we really have to
+            if ((menuIgnoreDepth > 2 && !menuSkipped) && (AXUIElementCopyAttributeValue(child, kAXTitleAttribute, &name) == kAXErrorSuccess))
+            {
+                [name autorelease];
+                if ([name isEqualToString:@"Apple"])
+                {
+                    menuSkipped = YES;
+                    continue;
+                }
+            }
+            else if (menuIgnoreDepth > 0 && !menuSkipped && (AXUIElementCopyAttributeValue(child, kAXTitleAttribute, &name) == kAXErrorSuccess)) {
+                [name autorelease];
+                if ([name isEqualToString:@"Services"])
+                {
+                    menuSkipped = YES;
+                    continue;
+                }
+            }
+            
+            [menuItems addObjectsFromArray:MenuItemsForElement(child,depth - 1,name,menuIgnoreDepth - 1, process)];
+        }
     }
+    [children release];
     
-    [menuItems addObjectsFromArray:MenuItemsForElement(child,depth - 1,name,menuIgnoreDepth - 1, process)];
-  }
-  
-  return menuItems;
+    return menuItems;
 }
 
 - (QSObject *)appMenus:(QSObject *)dObject pickItem:(QSObject *)iObject{
@@ -76,9 +77,9 @@ NSArray *MenuItemsForElement(AXUIElementRef element, NSInteger depth, NSString *
   NSDictionary *process = [dObject objectForType:QSProcessType];
 	pid_t pid = [[process objectForKey:@"NSApplicationProcessIdentifier"] intValue];
 	AXUIElementRef app=AXUIElementCreateApplication (pid);	
-  [app autorelease];
 	AXUIElementRef menuBar;
 	AXUIElementCopyAttributeValue (app, kAXMenuBarAttribute, &menuBar);
+    [app release];
 	NSArray *items=MenuItemsForElement(menuBar,5,nil,3,process);
 	
 	[QSPreferredCommandInterface showArray:items];
@@ -89,10 +90,9 @@ NSArray *WindowsForApp(id process, BOOL appName)
 {
 	pid_t pid = [[process objectForKey:@"NSApplicationProcessIdentifier"] intValue];
   AXUIElementRef appElement = AXUIElementCreateApplication(pid);
-  [appElement autorelease];
   NSArray *appWindows = nil;
   AXUIElementCopyAttributeValue(appElement, kAXWindowsAttribute, &appWindows);
-  [appWindows autorelease];
+    [appElement release];
   NSMutableArray *windowObjects = [NSMutableArray array];
   for (id aWindow in appWindows) {
     NSString *windowTitle = nil;
@@ -105,6 +105,7 @@ NSArray *WindowsForApp(id process, BOOL appName)
     [object setObject:process forType:kWindowsProcessType];
     [windowObjects addObject:object];
   }
+    [appWindows release];
   return windowObjects;
 }
 
@@ -122,11 +123,12 @@ NSArray *WindowsForApp(id process, BOOL appName)
   id process = [dObject objectForType:QSProcessType];
   pid_t pid = [[process objectForKey:@"NSApplicationProcessIdentifier"] intValue];
   AXUIElementRef appElement = AXUIElementCreateApplication(pid);
-  [appElement autorelease];
   id focusedWindow = nil;
   AXUIElementCopyAttributeValue(appElement, kAXFocusedWindowAttribute, &focusedWindow);
+    [appElement release];
   [focusedWindow autorelease];
   QSObject *window = [QSObject objectForWindow:focusedWindow name:nil process:process];
+    [focusedWindow release];
   return window;
 }
 
@@ -209,11 +211,11 @@ void PressButtonInWindow(id buttonName, id window)
   for (NSDictionary *process in launchedApps) {
     pid_t pid = [[process objectForKey:@"NSApplicationProcessIdentifier"] intValue];
     AXUIElementRef app = AXUIElementCreateApplication(pid);	
-    [app autorelease];
   	AXUIElementRef menuBar;
   	AXUIElementCopyAttributeValue(app, kAXMenuBarAttribute, &menuBar);
-    [menuBar autorelease];
+      [app release];
     QSObject *object = [QSObject objectByMergingObjects:MenuItemsForElement(menuBar,5,nil,3,process)];
+      [menuBar release];
     [object setName:[process objectForKey:@"NSApplicationName"]];
     [object setIcon:[[NSWorkspace sharedWorkspace] iconForFile:[process objectForKey:@"NSApplicationPath"]]];
   	[menus addObject:object];
@@ -253,12 +255,12 @@ void PressButtonInWindow(id buttonName, id window)
 	  NSDictionary *process = [dObject objectForType:QSProcessType];
 		pid_t pid = [[process objectForKey:@"NSApplicationProcessIdentifier"] intValue];
 		AXUIElementRef app=AXUIElementCreateApplication (pid);	
-    [app autorelease];
 		AXUIElementRef menuBar;
 		AXUIElementCopyAttributeValue (app, kAXMenuBarAttribute, &menuBar);
-    [menuBar autorelease];
+        [app release];
 		NSArray *actions=MenuItemsForElement(menuBar,5,nil,3, process);
-		
+        [menuBar release];
+
 		//NSLog(@"actions: %@",actions);
 		return [NSArray arrayWithObjects:[NSNull null],actions,nil];
 		return nil;
@@ -331,13 +333,13 @@ void PressButtonInWindow(id buttonName, id window)
   NSDictionary *process = [[self resolvedProxy:appObject] objectForType:QSProcessType];
   pid_t pid = [[process objectForKey:@"NSApplicationProcessIdentifier"] intValue];
   AXUIElementRef app = AXUIElementCreateApplication(pid);
-  [(id)app autorelease];
   AXUIElementRef window = nil;
   AXUIElementCopyAttributeValue(app, kAXFocusedWindowAttribute, &window);
-  [(id)window autorelease];
+    [(id)app release];
     if ([self firstDocumentObjectForElement:window depth:3 title:nil]) {
         return [self firstDocumentObjectForElement:window depth:3 title:nil];
     }
+    [(id)window release];
     return nil;
 }
 

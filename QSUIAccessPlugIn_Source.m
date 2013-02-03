@@ -41,22 +41,24 @@
 - (NSArray *)objectsForElements:(NSArray *)elements process:(NSDictionary *)process {
 	if (!elements)return nil;
 	NSMutableArray *objects=[NSMutableArray arrayWithCapacity:[elements count]];
-	for(NSString * element in elements){
-		NSString *name = nil; 
-		AXUIElementCopyAttributeValue (element, kAXTitleAttribute, &name);
-		[name autorelease];
-		//NSLog(@"name %@",name);
-		if (![name length]) continue;
-		QSObject *object=[QSObject objectForUIElement:element name:name process:process];
-		[objects addObject:object];		
-	}
+    @autoreleasepool {
+        for(NSString * element in elements){
+            NSString *name = nil;
+            AXUIElementCopyAttributeValue (element, kAXTitleAttribute, &name);
+            [name autorelease];
+            //NSLog(@"name %@",name);
+            if (![name length]) continue;
+            QSObject *object=[QSObject objectForUIElement:element name:name process:process];
+            [objects addObject:object];		
+        }
+    }
 	return objects;
 }
 
 - (BOOL)loadChildrenForObject:(QSObject *)object{
-  AXUIElementRef element = [object objectForType:kQSUIElementType];
+    AXUIElementRef element = [object objectForType:kQSUIElementType];
 	NSArray *children = [self childrenForElement:element];
-  NSDictionary *process = [object objectForType:kWindowsProcessType];
+    NSDictionary *process = [object objectForType:kWindowsProcessType];
 	[object setChildren:[self objectsForElements:children process:process]];
 	return YES;
 }
@@ -98,28 +100,32 @@ QSObject * QSObjectForAXUIElementWithNameProcessType(id element, NSString *name,
   QSObject *object = QSObjectForAXUIElementWithNameProcessType(element, name, process, kWindowsType);
   [object setIcon:[QSResourceManager imageNamed:@"WindowIcon"]];
   CFArrayRef windows = CGWindowListCopyWindowInfo(kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements, kCGNullWindowID);
-  for (NSDictionary *info in (NSArray *)windows)
-  {
-    if (![(NSNumber *)[info objectForKey:kCGWindowOwnerPID] isEqual:[process objectForKey:@"NSApplicationProcessIdentifier"]]) continue;
-    CFStringRef windowName = [info objectForKey:kCGWindowName];
+  for (NSDictionary *info in (NSArray *)windows) {
+    if (![(NSNumber *)[info objectForKey:(NSString *)kCGWindowOwnerPID] isEqual:[process objectForKey:@"NSApplicationProcessIdentifier"]]) continue;
+    NSString *windowName = (NSString*)[info objectForKey:(NSString *)kCGWindowName];
     if (!windowName) continue;
     if ([windowName localizedCompare:[object name]] != 0) continue;
-    CGImageRef windowImage = CGWindowListCreateImage(CGRectNull, kCGWindowListOptionIncludingWindow, [[info objectForKey:kCGWindowNumber] unsignedIntValue], kCGWindowImageBoundsIgnoreFraming);
-    if ((!windowImage) || (CGImageGetWidth(windowImage) < 1) || (CGImageGetHeight(windowImage) < 1)) {
+      CGRect bounds;
+      CGRectMakeWithDictionaryRepresentation((CFDictionaryRef)[info objectForKey:(NSString *)kCGWindowBounds],&bounds);
+      // can't typecast until we drop 32 bit. Create an NSRect
+      NSRect rect = NSRectFromCGRect(bounds);
+      if (NSWidth(rect) < 1 || NSHeight(rect) < 1) {
+          continue;
+      }
+      
+    CGImageRef windowImage = CGWindowListCreateImage(CGRectNull, kCGWindowListOptionIncludingWindow, [[info objectForKey:(NSString*)kCGWindowNumber] unsignedIntValue], kCGWindowImageBoundsIgnoreFraming);
+    if (!windowImage) {
       continue;
     }
     else {
-      NSBitmapImageRep *rep = [[NSBitmapImageRep alloc] initWithCGImage:windowImage];
-      NSImage *icon = [[NSImage alloc] init];
-      [icon addRepresentation:rep];
-      [rep release];
+        NSImage *icon = [[NSImage alloc] initWithCGImage:windowImage size:NSZeroSize];
       [object setIcon:icon];
       [icon release];
     }
     CGImageRelease(windowImage);
     break;
   }
-  [windows release];
+  CFRelease(windows);
   
   return object;
 }
