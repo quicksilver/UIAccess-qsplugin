@@ -22,7 +22,7 @@
 - (BOOL)objectHasChildren:(QSObject *)object{
 	id element=[object objectForType:kQSUIElementType];
 	CFIndex count=0;
-	AXUIElementGetAttributeValueCount(element, kAXChildrenAttribute, &count);
+	AXUIElementGetAttributeValueCount((AXUIElementRef)element, kAXChildrenAttribute, &count);
 	return count;
 }
 
@@ -34,17 +34,17 @@
 	CFIndex count=0;
 	NSArray *children=nil;
 	AXUIElementGetAttributeValueCount(element, kAXChildrenAttribute, &count);
-	AXUIElementCopyAttributeValues(element, kAXChildrenAttribute, 0, count, &children);
+	AXUIElementCopyAttributeValues(element, kAXChildrenAttribute, 0, count, (CFArrayRef *)&children);
 	return [children autorelease];
 }
 
-- (NSArray *)objectsForElements:(NSArray *)elements process:(NSDictionary *)process {
+- (NSArray *)objectsForElements:(NSArray *)elements process:(NSRunningApplication *)process {
 	if (!elements)return nil;
 	NSMutableArray *objects=[NSMutableArray arrayWithCapacity:[elements count]];
     @autoreleasepool {
         for(NSString * element in elements){
             NSString *name = nil;
-            AXUIElementCopyAttributeValue (element, kAXTitleAttribute, &name);
+            AXUIElementCopyAttributeValue ((AXUIElementRef)element, kAXTitleAttribute, (CFTypeRef *)&name);
             [name autorelease];
             //NSLog(@"name %@",name);
             if (![name length]) continue;
@@ -56,9 +56,9 @@
 }
 
 - (BOOL)loadChildrenForObject:(QSObject *)object{
-    AXUIElementRef element = [object objectForType:kQSUIElementType];
+    AXUIElementRef element = (AXUIElementRef)[object objectForType:kQSUIElementType];
 	NSArray *children = [self childrenForElement:element];
-    NSDictionary *process = [object objectForType:kWindowsProcessType];
+    NSRunningApplication *process = [object objectForType:kWindowsProcessType];
 	[object setChildren:[self objectsForElements:children process:process]];
 	return YES;
 }
@@ -66,12 +66,12 @@
 @end
 
 
-QSObject * QSObjectForAXUIElementWithNameProcessType(id element, NSString *name, NSDictionary *process, NSString *type)
+QSObject * QSObjectForAXUIElementWithNameProcessType(id element, NSString *name, NSRunningApplication *process, NSString *type)
 {
   if (!name) {
     NSString *newName = nil;
-    if (AXUIElementCopyAttributeValue(element, kAXTitleAttribute, &newName) != kAXErrorSuccess) return nil;
-    if (AXValueGetType(newName) == kAXValueAXErrorType) return nil;
+    if (AXUIElementCopyAttributeValue((AXUIElementRef)element, kAXTitleAttribute, (CFTypeRef *)&newName) != kAXErrorSuccess) return nil;
+    if (AXValueGetType((AXValueRef)newName) == kAXValueAXErrorType) return nil;
     [newName autorelease];
     name = newName;
   }
@@ -83,51 +83,47 @@ QSObject * QSObjectForAXUIElementWithNameProcessType(id element, NSString *name,
 }
 
 @implementation QSObject (UIElement)
-+ (QSObject *)objectForUIElement:(id)element name:(NSString *)name process:(NSDictionary *)process
++ (QSObject *)objectForUIElement:(id)element name:(NSString *)name process:(NSRunningApplication *)process
 {
-  QSObject *object = QSObjectForAXUIElementWithNameProcessType(element, name, process, kQSUIElementType);
-  NSString *path = [process objectForKey:@"NSApplicationPath"];
-  if (path) {
-    [object setIcon:[[NSWorkspace sharedWorkspace] iconForFile:path]];
-  }
-  return object;
+    QSObject *object = QSObjectForAXUIElementWithNameProcessType(element, name, process, kQSUIElementType);
+    NSImage *icon = [process icon];
+    if (icon) {
+        [object setIcon:icon];
+    }
+    return object;
 }
 @end
 
 @implementation QSObject (Windows)
-+ (QSObject *)objectForWindow:(id)element name:(NSString *)name process:(NSDictionary *)process
++ (QSObject *)objectForWindow:(id)element name:(NSString *)name process:(NSRunningApplication *)process appWindows:(NSArray *)appWindows
 {
-  QSObject *object = QSObjectForAXUIElementWithNameProcessType(element, name, process, kWindowsType);
-  [object setIcon:[QSResourceManager imageNamed:@"WindowIcon"]];
-  CFArrayRef windows = CGWindowListCopyWindowInfo(kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements, kCGNullWindowID);
-  for (NSDictionary *info in (NSArray *)windows) {
-    if (![(NSNumber *)[info objectForKey:(NSString *)kCGWindowOwnerPID] isEqual:[process objectForKey:@"NSApplicationProcessIdentifier"]]) continue;
-    NSString *windowName = (NSString*)[info objectForKey:(NSString *)kCGWindowName];
-    if (!windowName) continue;
-    if ([windowName localizedCompare:[object name]] != 0) continue;
-      CGRect bounds;
-      CGRectMakeWithDictionaryRepresentation((CFDictionaryRef)[info objectForKey:(NSString *)kCGWindowBounds],&bounds);
-      // can't typecast until we drop 32 bit. Create an NSRect
-      NSRect rect = NSRectFromCGRect(bounds);
-      if (NSWidth(rect) < 1 || NSHeight(rect) < 1) {
-          continue;
-      }
-      
-    CGImageRef windowImage = CGWindowListCreateImage(CGRectNull, kCGWindowListOptionIncludingWindow, [[info objectForKey:(NSString*)kCGWindowNumber] unsignedIntValue], kCGWindowImageBoundsIgnoreFraming);
-    if (!windowImage) {
-      continue;
-    }
-    else {
+    QSObject *object = QSObjectForAXUIElementWithNameProcessType(element, name, process, kWindowsType);
+    for (NSDictionary *info in appWindows) {
+        NSString *windowName = (NSString*)[info objectForKey:(NSString *)kCGWindowName];
+        if (!windowName) continue;
+        if ([windowName localizedCompare:[object name]] != 0) continue;
+        CGRect bounds;
+        CGRectMakeWithDictionaryRepresentation((CFDictionaryRef)[info objectForKey:(NSString *)kCGWindowBounds],&bounds);
+        if (NSWidth((NSRect)bounds) < 1 || NSHeight((NSRect)bounds) < 1) {
+            continue;
+        }
+        
+        CGImageRef windowImage = CGWindowListCreateImage(CGRectNull, kCGWindowListOptionIncludingWindow, [[info objectForKey:(NSString*)kCGWindowNumber] unsignedIntValue], kCGWindowImageBoundsIgnoreFraming);
+        if (!windowImage) {
+            continue;
+        }
         NSImage *icon = [[NSImage alloc] initWithCGImage:windowImage size:NSZeroSize];
-      [object setIcon:icon];
-      [icon release];
+        [object setIcon:icon];
+        [icon release];
+        CGImageRelease(windowImage);
+        break;
     }
-    CGImageRelease(windowImage);
-    break;
-  }
-  CFRelease(windows);
-  
-  return object;
+    
+    if (![object icon]) {
+        [object setIcon:[QSResourceManager imageNamed:@"WindowIcon"]];
+    }
+    
+    return object;
 }
 @end
 
