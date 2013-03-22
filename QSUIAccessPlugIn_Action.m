@@ -27,7 +27,6 @@ NSArray *MenuItemsForElement(AXUIElementRef element, NSInteger depth, NSString *
         return (menuObject) ? [NSArray arrayWithObject:menuObject] : [NSArray array];
     }
     NSMutableArray *menuItems = [NSMutableArray array];
-    BOOL menuSkipped = NO;
     @autoreleasepool {
         for (id child in children) {
             CFTypeRef enabled = NULL;
@@ -39,24 +38,15 @@ NSArray *MenuItemsForElement(AXUIElementRef element, NSInteger depth, NSString *
             NSString *name = nil;
             
             // try not to get the name attribute and test it unless we really have to
-            if ((menuIgnoreDepth > 1 && !menuSkipped) && (AXUIElementCopyAttributeValue((AXUIElementRef)child, kAXTitleAttribute, (CFTypeRef *)&name) == kAXErrorSuccess))
+            if (AXUIElementCopyAttributeValue((AXUIElementRef)child, kAXTitleAttribute, (CFTypeRef *)&name) == kAXErrorSuccess)
             {
                 [name autorelease];
-                if ([name isEqualToString:@"Apple"])
+                NSLog(@"%@",name);
+                if ([name isEqualToString:@"Apple"] || [name isEqualToString:@"Services"])
                 {
-                    menuSkipped = YES;
                     continue;
                 }
             }
-            else if (menuIgnoreDepth > 0 && !menuSkipped && (AXUIElementCopyAttributeValue((AXUIElementRef)child, kAXTitleAttribute, (CFTypeRef *)&name) == kAXErrorSuccess)) {
-                [name autorelease];
-                if ([name isEqualToString:@"Services"])
-                {
-                    menuSkipped = YES;
-                    continue;
-                }
-            }
-            
             [menuItems addObjectsFromArray:MenuItemsForElement((AXUIElementRef)child, depth - 1,name,menuIgnoreDepth - 1, process)];
         }
     }
