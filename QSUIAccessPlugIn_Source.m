@@ -68,15 +68,15 @@
 
 QSObject * QSObjectForAXUIElementWithNameProcessType(id element, NSString *name, NSRunningApplication *process, NSString *type)
 {
-  if (!name) {
-    NSString *newName = nil;
-    if (AXUIElementCopyAttributeValue((AXUIElementRef)element, kAXTitleAttribute, (CFTypeRef *)&newName) != kAXErrorSuccess) return nil;
-    if (AXValueGetType((AXValueRef)newName) == kAXValueAXErrorType) return nil;
-    [newName autorelease];
-    name = newName;
-  }
-  
-  QSObject *object = [QSObject objectWithName:name];
+    if (!name) {
+        NSString *newName = nil;
+        if (AXUIElementCopyAttributeValue((AXUIElementRef)element, kAXTitleAttribute, (CFTypeRef *)&newName) != kAXErrorSuccess) return nil;
+        if (AXValueGetType((AXValueRef)newName) == kAXValueAXErrorType) return nil;
+        [newName autorelease];
+        name = newName;
+    }
+    
+    QSObject *object = [QSObject objectWithName:name];
 	[object setObject:element forType:type];
 	[object setObject:process forType:kWindowsProcessType];
 	return object;

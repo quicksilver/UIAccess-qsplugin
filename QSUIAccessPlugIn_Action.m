@@ -22,7 +22,7 @@ NSArray *MenuItemsForElement(AXUIElementRef element, NSInteger depth, NSString *
         AXUIElementCopyAttributeValue(element, kAXChildrenAttribute, (CFTypeRef *)&children);
         childrenCount = [children count];
     }
-    if (depth < 1 || childrenCount < 1 || childrenCount > 50) {
+    if (depth < 1 || childrenCount < 1 || childrenCount > 60) {
         QSObject *menuObject = [QSObject objectForUIElement:(id)element name:elementName process:process];
         return (menuObject) ? [NSArray arrayWithObject:menuObject] : [NSArray array];
     }
@@ -39,7 +39,7 @@ NSArray *MenuItemsForElement(AXUIElementRef element, NSInteger depth, NSString *
             NSString *name = nil;
             
             // try not to get the name attribute and test it unless we really have to
-            if ((menuIgnoreDepth > 2 && !menuSkipped) && (AXUIElementCopyAttributeValue((AXUIElementRef)child, kAXTitleAttribute, (CFTypeRef *)&name) == kAXErrorSuccess))
+            if ((menuIgnoreDepth > 1 && !menuSkipped) && (AXUIElementCopyAttributeValue((AXUIElementRef)child, kAXTitleAttribute, (CFTypeRef *)&name) == kAXErrorSuccess))
             {
                 [name autorelease];
                 if ([name isEqualToString:@"Apple"])
@@ -90,7 +90,7 @@ NSArray *MenuItemsForElement(AXUIElementRef element, NSInteger depth, NSString *
 	AXUIElementRef menuBar;
 	AXUIElementCopyAttributeValue (app, kAXMenuBarAttribute, (CFTypeRef *)&menuBar);
     CFRelease(app);
-	NSArray *items=MenuItemsForElement(menuBar,5,nil,2,process);
+	NSArray *items=MenuItemsForElement(menuBar,6,nil,2,process);
     CFRelease(menuBar);
 	[QSPreferredCommandInterface showArray:[[items mutableCopy] autorelease]];
 	return nil;
@@ -245,7 +245,7 @@ void PressButtonInWindow(id buttonName, id window)
         AXUIElementRef menuBar;
         AXUIElementCopyAttributeValue(app, kAXMenuBarAttribute, (CFTypeRef *)&menuBar);
         CFRelease(app);
-        QSObject *object = [QSObject objectByMergingObjects:MenuItemsForElement(menuBar,5,nil,2,process)];
+        QSObject *object = [QSObject objectByMergingObjects:MenuItemsForElement(menuBar,6,nil,2,process)];
         CFRelease(menuBar);
         [object setName:[process localizedName]];
         [object setIcon:[process icon]];
@@ -291,7 +291,7 @@ void PressButtonInWindow(id buttonName, id window)
 		AXUIElementRef menuBar;
 		AXUIElementCopyAttributeValue (app, kAXMenuBarAttribute, (CFTypeRef *)&menuBar);
         CFRelease(app);
-		NSArray *actions=MenuItemsForElement(menuBar,5,nil,2, process);
+		NSArray *actions=MenuItemsForElement(menuBar,6,nil,2, process);
         CFRelease(menuBar);
 		return [NSArray arrayWithObjects:[NSNull null],actions,nil];
 	} else if ([action isEqualToString:@"ListWindowsForApp"]) {
