@@ -15,15 +15,15 @@
 - (BOOL)objectHasChildren:(QSObject *)object;
 - (NSString *)detailsOfObject:(QSObject *)object;
 - (NSArray *)childrenForElement:(AXUIElementRef)element;
-- (NSArray *)objectsForElements:(NSArray *)elements process:(NSDictionary *)process;
+- (NSArray *)objectsForElements:(NSArray *)elements process:(NSRunningApplication *)process;
 - (BOOL)loadChildrenForObject:(QSObject *)object;
 @end
 
 @interface QSObject (UIElement)
-+ (QSObject *)objectForUIElement:(id)element name:(NSString *)name process:(NSDictionary *)process;
++ (QSObject *)objectForUIElement:(id)element name:(NSString *)name process:(NSRunningApplication *)process;
 @end
 
 @interface QSObject (Windows)
-+ (QSObject *)objectForWindow:(id)element name:(NSString *)name process:(NSDictionary *)process;
++ (QSObject *)objectForWindow:(id)element name:(NSString *)name process:(NSRunningApplication *)process appWindows:(NSArray *)appWindows;
 @end
 
