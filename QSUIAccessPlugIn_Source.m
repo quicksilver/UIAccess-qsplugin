@@ -104,7 +104,7 @@ QSObject * QSObjectForAXUIElementWithNameProcessType(id element, NSString *name,
         if ([windowName localizedCompare:[object name]] != 0) continue;
         CGRect bounds;
         CGRectMakeWithDictionaryRepresentation((CFDictionaryRef)[info objectForKey:(NSString *)kCGWindowBounds],&bounds);
-        if (NSWidth((NSRect)bounds) < 1 || NSHeight((NSRect)bounds) < 1) {
+        if (bounds.size.width < 1 || bounds.size.height < 1) {
             continue;
         }
         
