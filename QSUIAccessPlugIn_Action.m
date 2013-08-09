@@ -41,7 +41,6 @@ NSArray *MenuItemsForElement(AXUIElementRef element, NSInteger depth, NSString *
             if (AXUIElementCopyAttributeValue((AXUIElementRef)child, kAXTitleAttribute, (CFTypeRef *)&name) == kAXErrorSuccess)
             {
                 [name autorelease];
-                NSLog(@"%@",name);
                 if ([name isEqualToString:@"Apple"] || [name isEqualToString:@"Services"])
                 {
                     continue;
