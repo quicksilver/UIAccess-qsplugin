@@ -130,6 +130,9 @@ NSArray *WindowsForApp(NSRunningApplication *process, BOOL appName)
 {
     dObject = [self resolvedProxy:dObject];
     id process = [dObject objectForType:QSProcessType];
+    if ([process isKindOfClass:[NSDictionary class]]) {
+        process = [NSRunningApplication runningApplicationWithProcessIdentifier:[[process objectForKey:@"NSApplicationProcessIdentifier"] intValue]];
+    }
     NSArray *windowObjects = WindowsForApp(process, NO);
     if (windowObjects) {
         [QSPreferredCommandInterface showArray:[[windowObjects mutableCopy] autorelease]];
@@ -141,7 +144,7 @@ NSArray *WindowsForApp(NSRunningApplication *process, BOOL appName)
     dObject = [self resolvedProxy:dObject];
     id process = [dObject objectForType:QSProcessType];
     if ([process isKindOfClass:[NSDictionary class]]) {
-        process = [NSRunningApplication runningApplicationWithProcessIdentifier:[[process objectForCache:@"NSApplicationProcessIdentifier"] intValue]];
+        process = [NSRunningApplication runningApplicationWithProcessIdentifier:[[process objectForKey:@"NSApplicationProcessIdentifier"] intValue]];
     }
     AXUIElementRef appElement = AXUIElementCreateApplication([process processIdentifier]);
     id focusedWindow = nil;
