@@ -19,7 +19,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>2.2.0</string>
 	<key>CFBundleVersion</key>
-	<string>224</string>
+	<string>225</string>
 	<key>NSPrincipalClass</key>
 	<string>QSUIAccessPlugIn</string>
 	<key>QSActions</key>
@@ -306,7 +306,8 @@
 &lt;/ul&gt;
 &lt;p&gt;&lt;em&gt;Note: The 'Close', 'Minimize' and 'Zoom' actions work with the comma trick, allowing you to manage multiple windows at once&lt;/em&gt;&lt;/p&gt;
 &lt;h3&gt;Menu Items&lt;/h3&gt;
-&lt;p&gt;Menu Items only have one action available: &lt;strong&gt;Press&lt;/strong&gt;. This has the same effect as clicking the menu item.&lt;/p&gt;
+&lt;p&gt;Menu Items only have one action available: &lt;strong&gt;Press&lt;/strong&gt;. This has the same effect as clicking the menu item.
+To better indicate where Menu Items have come from, their details will show the full Menu path. For example: "Edit ▸ Find ▸ Find…"&lt;/p&gt;
 &lt;h3&gt;Triggers&lt;/h3&gt;
 &lt;p&gt;When this plugin is installed, the following triggers are available in the UI Access section of the Triggers preference pane:&lt;/p&gt;
 &lt;ul&gt;

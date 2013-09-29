@@ -35,7 +35,7 @@ Windows can also have several actions performed on them:
 ### Menu Items
 
 Menu Items only have one action available: **Press**. This has the same effect as clicking the menu item.
-
+To better indicate where Menu Items have come from, their details will show the full Menu path. For example: "Edit ▸ Find ▸ Find…"
 ### Triggers
 
 When this plugin is installed, the following triggers are available in the UI Access section of the Triggers preference pane:
