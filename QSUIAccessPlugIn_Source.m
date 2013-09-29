@@ -81,9 +81,9 @@ QSObject * QSObjectForAXUIElementWithNameProcessType(id element, NSString *name,
     }
     QSObject *object = [[QSObject alloc] init];
     if (parentName != nil) {
-        NSString *parentChildName = [NSString stringWithFormat:@"%@ → %@", parentName, name];
-        [object setDetails:parentChildName];
-        [object setName:parentChildName];
+        NSString *fullPath = [NSString stringWithFormat:@"%@ ► %@", parentName, name];
+        [object setDetails:fullPath];
+        [object setName:fullPath];
         [object setLabel:name];
     } else {
         [object setName:name];
@@ -110,7 +110,7 @@ QSObject * QSObjectForAXUIElementWithNameProcessType(id element, NSString *name,
 @implementation QSObject (Windows)
 + (QSObject *)objectForWindow:(id)element name:(NSString *)name process:(NSRunningApplication *)process appWindows:(NSArray *)appWindows
 {
-    QSObject *object = QSObjectForAXUIElementWithNameProcessType(element, nil, name, process, kWindowsType);
+    QSObject *object = QSObjectForAXUIElementWithNameProcessType(element, name, nil, process, kWindowsType);
     for (NSDictionary *info in appWindows) {
         NSString *windowName = (NSString*)[info objectForKey:(NSString *)kCGWindowName];
         if (!windowName) continue;

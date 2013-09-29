@@ -38,7 +38,7 @@
 		E1647F590705A7870033D4BF /* QSUIAccessPlugIn_Source.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = QSUIAccessPlugIn_Source.h; sourceTree = "<group>"; };
 		E1647F5A0705A7870033D4BF /* QSUIAccessPlugIn_Source.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QSUIAccessPlugIn_Source.m; sourceTree = "<group>"; };
 		E1647F660705A7A00033D4BF /* QSUIAccessPlugIn_Action.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = QSUIAccessPlugIn_Action.h; sourceTree = "<group>"; };
-		E1647F670705A7A00033D4BF /* QSUIAccessPlugIn_Action.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = QSUIAccessPlugIn_Action.m; sourceTree = "<group>"; };
+		E1647F670705A7A00033D4BF /* QSUIAccessPlugIn_Action.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QSUIAccessPlugIn_Action.m; sourceTree = "<group>"; };
 		E1EAB045068128A200774DFF /* QSUIAccessPlugIn.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = QSUIAccessPlugIn.m; sourceTree = "<group>"; };
 		E1EAB047068128A800774DFF /* QSUIAccessPlugIn.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = QSUIAccessPlugIn.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
