@@ -81,7 +81,7 @@ QSObject * QSObjectForAXUIElementWithNameProcessType(id element, NSString *name,
     }
     QSObject *object = [[QSObject alloc] init];
     if (parentName != nil) {
-        NSString *fullPath = [NSString stringWithFormat:@"%@ ► %@", parentName, name];
+        NSString *fullPath = [NSString stringWithFormat:@"%@ ▸ %@", parentName, name];
         [object setDetails:fullPath];
         [object setName:fullPath];
         [object setLabel:name];

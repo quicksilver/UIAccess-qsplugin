@@ -49,7 +49,7 @@ NSArray *MenuItemsForElement(AXUIElementRef element, NSInteger depth, NSString *
                     continue;
                 }
             }
-            [menuItems addObjectsFromArray:MenuItemsForElement((AXUIElementRef)child, depth - 1, name, _parentName != nil ? (parentName != nil ? [NSString stringWithFormat:@"%@ ► %@",parentName, _parentName] : _parentName) : parentName, menuIgnoreDepth - 1, process)];
+            [menuItems addObjectsFromArray:MenuItemsForElement((AXUIElementRef)child, depth - 1, name, _parentName != nil ? (parentName != nil ? [NSString stringWithFormat:@"%@ ▸ %@", parentName, _parentName] : _parentName) : parentName, menuIgnoreDepth - 1, process)];
         }
     }
     [_parentName release];
