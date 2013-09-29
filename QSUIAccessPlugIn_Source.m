@@ -79,9 +79,14 @@ QSObject * QSObjectForAXUIElementWithNameProcessType(id element, NSString *name,
         [newName autorelease];
         name = newName;
     }
-    QSObject *object = [QSObject objectWithName:name];
+    QSObject *object = [[QSObject alloc] init];
     if (parentName != nil) {
-            [object setDetails:[NSString stringWithFormat:@"%@ → %@", parentName, name]];
+        NSString *parentChildName = [NSString stringWithFormat:@"%@ → %@", parentName, name];
+        [object setDetails:parentChildName];
+        [object setName:parentChildName];
+        [object setLabel:name];
+    } else {
+        [object setName:name];
     }
     // give items an identifier, so mnemonics can be saved
     [object setIdentifier:[NSString stringWithFormat:@"bundle:%@:name:%@", [process bundleIdentifier], name]];
