@@ -284,9 +284,15 @@ void PressButtonInWindow(id buttonName, id window)
             process = [NSRunningApplication runningApplicationWithProcessIdentifier:[[process objectForKey:@"NSApplicationProcessIdentifier"] intValue]];
         }
 		AXUIElementRef app=AXUIElementCreateApplication ([process processIdentifier]);
+        if (!app) {
+            return nil;
+        }
 		AXUIElementRef menuBar;
 		AXUIElementCopyAttributeValue (app, kAXMenuBarAttribute, (CFTypeRef *)&menuBar);
         CFRelease(app);
+        if (!menuBar) {
+            return nil;
+        }
 		NSArray *actions=MenuItemsForElement(menuBar, 6, nil, nil, 2, process);
         CFRelease(menuBar);
 		return [NSArray arrayWithObjects:[NSNull null],actions,nil];
