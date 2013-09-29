@@ -19,7 +19,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>2.1.1</string>
 	<key>CFBundleVersion</key>
-	<string>207</string>
+	<string>209</string>
 	<key>NSPrincipalClass</key>
 	<string>QSUIAccessPlugIn</string>
 	<key>QSActions</key>
@@ -497,7 +497,7 @@
 		<key>feature</key>
 		<integer>1</integer>
 		<key>version</key>
-		<string>1337</string>
+		<string>4001</string>
 	</dict>
 	<key>QSResourceAdditions</key>
 	<dict>

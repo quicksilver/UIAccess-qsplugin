@@ -38,9 +38,11 @@
 	return [children autorelease];
 }
 
-- (NSArray *)objectsForElements:(NSArray *)elements process:(NSRunningApplication *)process {
+- (NSArray *)objectsForElements:(NSArray *)elements parent:(AXUIElementRef)parent process:(NSRunningApplication *)process {
 	if (!elements)return nil;
 	NSMutableArray *objects=[NSMutableArray arrayWithCapacity:[elements count]];
+    NSString *parentName = nil;
+    AXUIElementCopyAttributeValue((AXUIElementRef)parent, kAXTitleAttribute, (CFTypeRef *)&parentName);
     @autoreleasepool {
         for(NSString * element in elements){
             NSString *name = nil;
@@ -48,10 +50,12 @@
             [name autorelease];
             //NSLog(@"name %@",name);
             if (![name length]) continue;
-            QSObject *object=[QSObject objectForUIElement:element name:name process:process];
+            
+            QSObject *object=[QSObject objectForUIElement:element name:name parent:parentName process:process];
             [objects addObject:object];		
         }
     }
+    [parentName release];
 	return objects;
 }
 
@@ -59,14 +63,14 @@
     AXUIElementRef element = (AXUIElementRef)[object objectForType:kQSUIElementType];
 	NSArray *children = [self childrenForElement:element];
     NSRunningApplication *process = [object objectForType:kWindowsProcessType];
-	[object setChildren:[self objectsForElements:children process:process]];
+	[object setChildren:[self objectsForElements:children parent:element process:process]];
 	return YES;
 }
 
 @end
 
 
-QSObject * QSObjectForAXUIElementWithNameProcessType(id element, NSString *name, NSRunningApplication *process, NSString *type)
+QSObject * QSObjectForAXUIElementWithNameProcessType(id element, NSString *name, NSString *parentName, NSRunningApplication *process, NSString *type)
 {
     if (!name) {
         NSString *newName = nil;
@@ -75,17 +79,21 @@ QSObject * QSObjectForAXUIElementWithNameProcessType(id element, NSString *name,
         [newName autorelease];
         name = newName;
     }
-    
     QSObject *object = [QSObject objectWithName:name];
+    if (parentName != nil) {
+            [object setDetails:[NSString stringWithFormat:@"%@ → %@", parentName, name]];
+    }
+    // give items an identifier, so mnemonics can be saved
+    [object setIdentifier:[NSString stringWithFormat:@"bundle:%@:name:%@", [process bundleIdentifier], name]];
 	[object setObject:element forType:type];
 	[object setObject:process forType:kWindowsProcessType];
 	return object;
 }
 
 @implementation QSObject (UIElement)
-+ (QSObject *)objectForUIElement:(id)element name:(NSString *)name process:(NSRunningApplication *)process
++ (QSObject *)objectForUIElement:(id)element name:(NSString *)name parent:(NSString *)parentName process:(NSRunningApplication *)process
 {
-    QSObject *object = QSObjectForAXUIElementWithNameProcessType(element, name, process, kQSUIElementType);
+    QSObject *object = QSObjectForAXUIElementWithNameProcessType(element, name, parentName, process, kQSUIElementType);
     NSImage *icon = [process icon];
     if (icon) {
         [object setIcon:icon];
@@ -97,7 +105,7 @@ QSObject * QSObjectForAXUIElementWithNameProcessType(id element, NSString *name,
 @implementation QSObject (Windows)
 + (QSObject *)objectForWindow:(id)element name:(NSString *)name process:(NSRunningApplication *)process appWindows:(NSArray *)appWindows
 {
-    QSObject *object = QSObjectForAXUIElementWithNameProcessType(element, name, process, kWindowsType);
+    QSObject *object = QSObjectForAXUIElementWithNameProcessType(element, nil, name, process, kWindowsType);
     for (NSDictionary *info in appWindows) {
         NSString *windowName = (NSString*)[info objectForKey:(NSString *)kCGWindowName];
         if (!windowName) continue;

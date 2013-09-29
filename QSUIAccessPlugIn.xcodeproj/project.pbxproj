@@ -36,7 +36,7 @@
 		E1647D700705A3620033D4BF /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		E1647E600705A6120033D4BF /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
 		E1647F590705A7870033D4BF /* QSUIAccessPlugIn_Source.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = QSUIAccessPlugIn_Source.h; sourceTree = "<group>"; };
-		E1647F5A0705A7870033D4BF /* QSUIAccessPlugIn_Source.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = QSUIAccessPlugIn_Source.m; sourceTree = "<group>"; };
+		E1647F5A0705A7870033D4BF /* QSUIAccessPlugIn_Source.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QSUIAccessPlugIn_Source.m; sourceTree = "<group>"; };
 		E1647F660705A7A00033D4BF /* QSUIAccessPlugIn_Action.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = QSUIAccessPlugIn_Action.h; sourceTree = "<group>"; };
 		E1647F670705A7A00033D4BF /* QSUIAccessPlugIn_Action.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = QSUIAccessPlugIn_Action.m; sourceTree = "<group>"; };
 		E1EAB045068128A200774DFF /* QSUIAccessPlugIn.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = QSUIAccessPlugIn.m; sourceTree = "<group>"; };

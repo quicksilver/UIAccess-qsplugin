@@ -14,7 +14,7 @@
 @implementation QSUIAccessPlugIn_Action
 
 
-NSArray *MenuItemsForElement(AXUIElementRef element, NSInteger depth, NSString *elementName, NSInteger menuIgnoreDepth, NSRunningApplication *process) {
+NSArray *MenuItemsForElement(AXUIElementRef element, NSInteger depth, NSString *elementName, NSString *parentName, NSInteger menuIgnoreDepth, NSRunningApplication *process) {
     NSUInteger childrenCount = 0;
     NSArray *children = nil;
     if (depth > 0) {
@@ -23,10 +23,12 @@ NSArray *MenuItemsForElement(AXUIElementRef element, NSInteger depth, NSString *
         childrenCount = [children count];
     }
     if (depth < 1 || childrenCount < 1 || childrenCount > 60) {
-        QSObject *menuObject = [QSObject objectForUIElement:(id)element name:elementName process:process];
+        QSObject *menuObject = [QSObject objectForUIElement:(id)element name:elementName parent:parentName process:process];
         return (menuObject) ? [NSArray arrayWithObject:menuObject] : [NSArray array];
     }
-    NSMutableArray *menuItems = [NSMutableArray array];
+    NSMutableOrderedSet *menuItems = [NSMutableOrderedSet new];
+    NSString *_parentName = nil;
+    AXUIElementCopyAttributeValue(element, kAXTitleAttribute, (CFTypeRef *)&_parentName);
     @autoreleasepool {
         for (id child in children) {
             CFTypeRef enabled = NULL;
@@ -35,23 +37,25 @@ NSArray *MenuItemsForElement(AXUIElementRef element, NSInteger depth, NSString *
             if (!CFBooleanGetValue(enabled)) {
                 continue;
             }
+
             NSString *name = nil;
-            
             // try not to get the name attribute and test it unless we really have to
             if (AXUIElementCopyAttributeValue((AXUIElementRef)child, kAXTitleAttribute, (CFTypeRef *)&name) == kAXErrorSuccess)
             {
                 [name autorelease];
+# warning "Comparing name equality in English only will break localised apps"
                 if ([name isEqualToString:@"Apple"] || [name isEqualToString:@"Services"])
                 {
                     continue;
                 }
             }
-            [menuItems addObjectsFromArray:MenuItemsForElement((AXUIElementRef)child, depth - 1,name,menuIgnoreDepth - 1, process)];
+            [menuItems addObjectsFromArray:MenuItemsForElement((AXUIElementRef)child, depth - 1, name, _parentName != nil ? _parentName : parentName, menuIgnoreDepth - 1, process)];
         }
     }
+    [_parentName release];
     [children release];
     
-    return menuItems;
+    return [[menuItems autorelease] array];
 }
 
 - (QSObject *)appMenus:(QSObject *)dObject pickItem:(QSObject *)iObject{
@@ -79,7 +83,7 @@ NSArray *MenuItemsForElement(AXUIElementRef element, NSInteger depth, NSString *
 	AXUIElementRef menuBar;
 	AXUIElementCopyAttributeValue (app, kAXMenuBarAttribute, (CFTypeRef *)&menuBar);
     CFRelease(app);
-	NSArray *items=MenuItemsForElement(menuBar,6,nil,2,process);
+	NSArray *items=MenuItemsForElement(menuBar, 6, nil, nil, 2, process);
     CFRelease(menuBar);
 	[QSPreferredCommandInterface showArray:[[items mutableCopy] autorelease]];
 	return nil;
@@ -237,7 +241,7 @@ void PressButtonInWindow(id buttonName, id window)
         AXUIElementRef menuBar;
         AXUIElementCopyAttributeValue(app, kAXMenuBarAttribute, (CFTypeRef *)&menuBar);
         CFRelease(app);
-        QSObject *object = [QSObject objectByMergingObjects:MenuItemsForElement(menuBar,6,nil,2,process)];
+        QSObject *object = [QSObject objectByMergingObjects:MenuItemsForElement(menuBar, 6, nil, nil, 2, process)];
         CFRelease(menuBar);
         [object setName:[process localizedName]];
         [object setIcon:[process icon]];
@@ -283,7 +287,7 @@ void PressButtonInWindow(id buttonName, id window)
 		AXUIElementRef menuBar;
 		AXUIElementCopyAttributeValue (app, kAXMenuBarAttribute, (CFTypeRef *)&menuBar);
         CFRelease(app);
-		NSArray *actions=MenuItemsForElement(menuBar,6,nil,2, process);
+		NSArray *actions=MenuItemsForElement(menuBar, 6, nil, nil, 2, process);
         CFRelease(menuBar);
 		return [NSArray arrayWithObjects:[NSNull null],actions,nil];
 	} else if ([action isEqualToString:@"ListWindowsForApp"]) {
