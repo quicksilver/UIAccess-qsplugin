@@ -1,47 +1,54 @@
-<h2>User Interface Plugin</h2>
+## User Interface Plugin
 
-<p>This plugin adds running applications (processes), application windows, and application menu items to Quicksilver's catalog.<br />
-<br /> Access for assistive devices must be enabled in Universal Access pane of System Preferences to use this plugin.</p>
+This plugin adds running applications (processes), application windows, and application menu items to Quicksilver's catalog.
 
-<h3>Processes</h3>
+ Access for assistive devices must be enabled in Universal Access pane of System Preferences to use this plugin.
 
-<p>Processes represent applications which are currently running on your Mac. Any application in Quicksilver's catalog can be used as a process if that app is running. The following actions are available for processes:</p>
+### Processes
 
-<ul> <li><b>Show Menu Items</b> – Generates and displays a searchable list of the app's menu items.</li>
-<li><b>Show Windows</b> – Generates and displays a list of the app's windows, searchable by window title.</li>
-<li><b>Focused Window</b> – Fetches and displays the app's focused window – this is usually the most recently used window, and the window which would get keyboard input if you started typing.</li>
-<li><b>Current Document</b> – Fetches and displays the file which corresponds with the document open in the app's focused window.</li></ul>
+Processes represent applications which are currently running on your Mac. Any application in Quicksilver's catalog can be used as a process if that app is running. The following actions are available for processes:
 
-<p>Selecting these objects in the second pane causes the third pane to display the results:</p>
-<ul> <li><b>Windows…</b> – Generates a list of the app's windows, searchable by window title. Pressing return on one of these windows is equivalent to using the Activate action on it.</li>
-<li><b>Menu Bar Items…</b> – Generates a searchable list of the app's menu items. Pressing return on one of these menu items is equivalent to using the Press action on it.</li></ul>
+*   **Show Menu Items** – Generates and displays a searchable list of the app's menu items.
+*   **Show Windows** – Generates and displays a list of the app's windows, searchable by window title.
+*   **Focused Window** – Fetches and displays the app's focused window – this is usually the most recently used window, and the window which would get keyboard input if you started typing.
+*   **Current Document** – Fetches and displays the file which corresponds with the document open in the app's focused window.
 
-<h3>Windows</h3>
+Selecting these objects in the second pane causes the third pane to display the results:
 
-<p>Windows can also have several actions performed on them:</p>
-<ul> <li><b>Activate</b> – Focuses the window, then makes all windows belonging to the app appear in front of all other windows.</li>
-<li><b>Raise</b> – Makes the window appear in front of all other windows, without changing which app is focused.</li>
-<li><b>Close</b> – The same as pressing the red Close button in the window's title bar.</li>
-<li><b>Minimize Window</b> – The same as pressing the amber Minimize button in the window's title bar.</li>
-<li><b>Zoom</b> – The same as pressing the green Zoom button in the window's title bar.</li></ul>
+*   **Windows…** – Generates a list of the app's windows, searchable by window title. Pressing return on one of these windows is equivalent to using the Activate action on it.
+*   **Menu Bar Items…** – Generates a searchable list of the app's menu items. Pressing return on one of these menu items is equivalent to using the Press action on it.
 
-<h3>Menu Items</h3>
+### Windows
 
-<p>Menu Items only have one action available: <b>Press</b>. This has the same effect as clicking the menu item.</p>
+Windows can also have several actions performed on them:
 
-<h3>Triggers</h3>
+*   **Show Application** - shows the application for the selected window in Quicksilver
+*   **Activate** – Focuses the window, then makes all windows belonging to the app appear in front of all other windows.
+*   **Raise** – Makes the window appear in front of all other windows, without changing which app is focused.
+*   **Close** – The same as pressing the red Close button in the window's title bar.
+*   **Minimize Window** – The same as pressing the amber Minimize button in the window's title bar.
+*   **Zoom** – The same as pressing the green Zoom button in the window's title bar.
+*   **Show Menu Items & Menu Bar Items...** - See above (Processes section). These actions work just the same as for processes, except they show the menu bar items for a specific window. Menu bar items may be different for each window, so this is useful for selecting items specific to one window.
 
-<p>When this plugin is installed, the following triggers are available in the UI Access section of the Triggers preference pane:</p>
+*Note: The 'Close', 'Minimize' and 'Zoom' actions work with the comma trick, allowing you to manage multiple windows at once*
 
-<ul> <li><b>Show All Menus</b> – Generates and displays a searchable list of the menu items of all running apps, grouped by app.</li>
-<li><b>Show All Windows</b> – Generates and displays a list of the windows of all running apps, searchable by window title and app name.</li>
-<li><b>Current Application</b> – Fetches the current app, places it in the first pane of the command window, and selects the second pane of the command window.</li>
-<li><b>Current Focused Window</b> – Fetches the current app's focused window, places it in the first pane of the command window, and selects the second pane of the command window.</li>
-<li><b>Current Document</b> – Fetches the document open in the current app's focused window, places it in the first pane of the command window, and selects the second pane of the command window.</li> </ul>
+### Menu Items
 
-<h3>Proxy Objects</h3>
+Menu Items only have one action available: **Press**. This has the same effect as clicking the menu item.
 
-<p>When this plugin is installed, the following proxy objects are available in the Proxy Objects source in the Quicksilver section of the Catalog preference pane:</p>
+### Triggers
 
-<ul> <li><b>Current Focused Window</b> – Represents the current app's focused window. The current app is whichever app currently has it's name in the menu bar. The focused window is usually the most recently used window, and the window which would get keyboard input if you started typing.</li>
-<li><b>Current Document</b> – Represents the file which corresponds with the document open in the current app's focused window.</li> </ul>
+When this plugin is installed, the following triggers are available in the UI Access section of the Triggers preference pane:
+
+*   **Show All Menus** – Generates and displays a searchable list of the menu items of all running apps, grouped by app.
+*   **Show All Windows** – Generates and displays a list of the windows of all running apps, searchable by window title and app name.
+*   **Current Application** – Fetches the current app, places it in the first pane of the command window, and selects the second pane of the command window.
+*   **Current Focused Window** – Fetches the current app's focused window, places it in the first pane of the command window, and selects the second pane of the command window.
+*   **Current Document** – Fetches the document open in the current app's focused window, places it in the first pane of the command window, and selects the second pane of the command window.
+
+### Proxy Objects
+
+When this plugin is installed, the following proxy objects are available in the Proxy Objects source in the Quicksilver section of the Catalog preference pane:
+
+*   **Current Focused Window** – Represents the current app's focused window. The current app is whichever app currently has it's name in the menu bar. The focused window is usually the most recently used window, and the window which would get keyboard input if you started typing.
+*   **Current Document** – Represents the file which corresponds with the document open in the current app's focused window.
