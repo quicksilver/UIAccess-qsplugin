@@ -184,8 +184,7 @@ NSArray *WindowsForApp(NSRunningApplication *process, BOOL appName)
   return [self activateWindow:iObject];
 }
 
-- (QSObject *)activateWindow:(QSObject *)dObject
-{
+- (QSObject *)activateWindow:(QSObject *)dObject {
     dObject = [self resolvedProxy:dObject];
     [self activateWindow:[dObject objectForType:kWindowsType] andProcess:[dObject objectForType:kWindowsProcessType]];
     return nil;
@@ -201,48 +200,46 @@ NSArray *WindowsForApp(NSRunningApplication *process, BOOL appName)
     }
 }
 
-- (QSObject *)raiseWindow:(QSObject *)dObject
-{
-  dObject = [self resolvedProxy:dObject];
-  id aWindow = [dObject objectForType:kWindowsType];
-  if (!aWindow) return nil;
-  AXUIElementPerformAction((AXUIElementRef)aWindow,kAXRaiseAction);
-  return nil;
+- (QSObject *)raiseWindow:(QSObject *)dObject {
+    
+    dObject = [self resolvedProxy:dObject];
+    id aWindow = [dObject objectForType:kWindowsType];
+    if (!aWindow) return nil;
+    AXUIElementPerformAction((AXUIElementRef)aWindow,kAXRaiseAction);
+    return nil;
 }
 
-void PressButtonInWindow(id buttonName, id window)
-{
-  AXUIElementRef button;
-  AXUIElementCopyAttributeValue((AXUIElementRef)window,(CFStringRef)buttonName, (CFTypeRef *)&button);
-  [(id)button autorelease];
-  AXUIElementPerformAction(button,kAXPressAction);
+void PressButtonInWindow(id buttonName, id window) {
+    AXUIElementRef button;
+    AXUIElementCopyAttributeValue((AXUIElementRef)window,(CFStringRef)buttonName, (CFTypeRef *)&button);
+    [(id)button autorelease];
+    AXUIElementPerformAction(button,kAXPressAction);
 }
 
-- (QSObject *)zoomWindow:(QSObject *)dObject
-{
-  dObject = [self resolvedProxy:dObject];
-  id aWindow = [dObject objectForType:kWindowsType];
-  if (!aWindow) return nil;
-  PressButtonInWindow((id)kAXZoomButtonAttribute, aWindow);
-  return nil;
+- (void)pressButton:(CFStringRef)button forObject:(QSObject *)obj {
+    for (QSObject *object in [obj splitObjects]) {
+        object = [self resolvedProxy:object];
+        id aWindow = [object objectForType:kWindowsType];
+        if (!aWindow) {
+            continue;
+        }
+        PressButtonInWindow((id)kAXCloseButtonAttribute, aWindow);
+    }
 }
 
-- (QSObject *)minimizeWindow:(QSObject *)dObject
-{
-  dObject = [self resolvedProxy:dObject];
-  id aWindow = [dObject objectForType:kWindowsType];
-  if (!aWindow) return nil;
-  PressButtonInWindow((id)kAXMinimizeButtonAttribute, aWindow);
-  return nil;
+- (QSObject *)zoomWindow:(QSObject *)dObject {
+    [self pressButton:kAXZoomButtonAttribute forObject:dObject];
+    return nil;
 }
 
-- (QSObject *)closeWindow:(QSObject *)dObject
-{
-  dObject = [self resolvedProxy:dObject];
-  id aWindow = [dObject objectForType:kWindowsType];
-  if (!aWindow) return nil;
-  PressButtonInWindow((id)kAXCloseButtonAttribute, aWindow);
-  return nil;
+- (QSObject *)minimizeWindow:(QSObject *)dObject {
+    [self pressButton:kAXMinimizeButtonAttribute forObject:dObject];
+    return nil;
+}
+
+- (QSObject *)closeWindow:(QSObject *)dObject {
+    [self pressButton:kAXCloseButtonAttribute forObject:dObject];
+    return nil;
 }
 
 - (QSObject *)allAppWindows:(QSObject *)dObject
