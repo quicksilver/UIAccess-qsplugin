@@ -71,20 +71,34 @@ NSArray *MenuItemsForElement(AXUIElementRef element, NSInteger depth, NSString *
 		return NO;
 }
 
-- (QSObject *)searchAppMenus:(QSObject *)dObject{
-  dObject = [self resolvedProxy:dObject];
-    
+- (NSArray *)menuItemsForObject:(QSObject *)dObject {
+    if ([dObject objectForType:kWindowsType]) {
+        // It's a window we're showing the menu items for, so activate that window first (but not the app)
+        // Each window may have different menu items, so this is important
+        [self activateWindow:[dObject objectForType:kWindowsType] andProcess:nil];
+    }
+    dObject = [self resolvedProxy:dObject];
     id process = [dObject objectForType:QSProcessType];
     if ([process isKindOfClass:[NSDictionary class]]) {
-        // for when the main app turns to using NSRunningApplication class for 'QSProcessType'
         process = [NSRunningApplication runningApplicationWithProcessIdentifier:[[process objectForKey:@"NSApplicationProcessIdentifier"] intValue]];
     }
-	AXUIElementRef app=AXUIElementCreateApplication ([process processIdentifier]);
-	AXUIElementRef menuBar;
-	AXUIElementCopyAttributeValue (app, kAXMenuBarAttribute, (CFTypeRef *)&menuBar);
+    AXUIElementRef app=AXUIElementCreateApplication ([process processIdentifier]);
+    if (!app) {
+        return nil;
+    }
+    AXUIElementRef menuBar;
+    AXUIElementCopyAttributeValue (app, kAXMenuBarAttribute, (CFTypeRef *)&menuBar);
     CFRelease(app);
-	NSArray *items=MenuItemsForElement(menuBar, 6, nil, nil, 2, process);
+    if (!menuBar) {
+        return nil;
+    }
+    NSArray *actions=MenuItemsForElement(menuBar, 6, nil, nil, 2, process);
     CFRelease(menuBar);
+    return actions;
+}
+
+- (QSObject *)searchAppMenus:(QSObject *)dObject{
+    NSArray *items = [self menuItemsForObject:dObject];
 	[QSPreferredCommandInterface showArray:[[items mutableCopy] autorelease]];
 	return nil;
 }	
@@ -144,6 +158,11 @@ NSArray *WindowsForApp(NSRunningApplication *process, BOOL appName)
     return nil;
 }
 
+- (QSObject *)showWindowApplication:(QSObject *)dObject {
+    NSRunningApplication *process = [dObject objectForType:kWindowsProcessType];
+    return [QSObject fileObjectWithFileURL:[process bundleURL]];
+}
+
 - (QSObject *)focusedWindowForApp:(QSObject *)dObject{
     dObject = [self resolvedProxy:dObject];
     id process = [dObject objectForType:QSProcessType];
@@ -167,13 +186,19 @@ NSArray *WindowsForApp(NSRunningApplication *process, BOOL appName)
 
 - (QSObject *)activateWindow:(QSObject *)dObject
 {
-  dObject = [self resolvedProxy:dObject];
-  id aWindow = [dObject objectForType:kWindowsType];
-  if (!aWindow) return nil;
-  AXUIElementPerformAction((AXUIElementRef)aWindow,kAXRaiseAction);
-	NSRunningApplication *process = [dObject objectForType:kWindowsProcessType];
-	if (process) [process activateWithOptions:NSApplicationActivateIgnoringOtherApps];
-  return nil;
+    dObject = [self resolvedProxy:dObject];
+    [self activateWindow:[dObject objectForType:kWindowsType] andProcess:[dObject objectForType:kWindowsProcessType]];
+    return nil;
+}
+
+-(void)activateWindow:(id)aWindow andProcess:(NSRunningApplication *)process {
+    if (!aWindow) {
+        return;
+    }
+    AXUIElementPerformAction((AXUIElementRef)aWindow, kAXRaiseAction);
+    if (process != nil) {
+        [process activateWithOptions:NSApplicationActivateIgnoringOtherApps];
+    }
 }
 
 - (QSObject *)raiseWindow:(QSObject *)dObject
@@ -278,23 +303,7 @@ void PressButtonInWindow(id buttonName, id window)
 
 - (NSArray *)validIndirectObjectsForAction:(NSString *)action directObject:(QSObject *)dObject{
 	if ([action isEqualToString:@"QSPickMenuItemsAction"]){
-        dObject = [self resolvedProxy:dObject];
-        id process = [dObject objectForType:QSProcessType];
-        if ([process isKindOfClass:[NSDictionary class]]) {
-            process = [NSRunningApplication runningApplicationWithProcessIdentifier:[[process objectForKey:@"NSApplicationProcessIdentifier"] intValue]];
-        }
-		AXUIElementRef app=AXUIElementCreateApplication ([process processIdentifier]);
-        if (!app) {
-            return nil;
-        }
-		AXUIElementRef menuBar;
-		AXUIElementCopyAttributeValue (app, kAXMenuBarAttribute, (CFTypeRef *)&menuBar);
-        CFRelease(app);
-        if (!menuBar) {
-            return nil;
-        }
-		NSArray *actions=MenuItemsForElement(menuBar, 6, nil, nil, 2, process);
-        CFRelease(menuBar);
+        NSArray *actions = [self menuItemsForObject:dObject];
 		return [NSArray arrayWithObjects:[NSNull null],actions,nil];
 	} else if ([action isEqualToString:@"ListWindowsForApp"]) {
         dObject = [self resolvedProxy:dObject];
@@ -350,6 +359,10 @@ void PressButtonInWindow(id buttonName, id window)
 
 - (QSObject *)resolvedProxy:(QSObject *)dObject
 {
+    if ([dObject objectForType:kWindowsProcessType]) {
+        NSRunningApplication *process = [dObject objectForType:kWindowsProcessType];
+        return [QSObject fileObjectWithFileURL:[process bundleURL]];
+    }
     if ([dObject respondsToSelector:@selector(resolvedObject)]) {
         return [dObject resolvedObject];
     }
