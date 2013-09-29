@@ -115,8 +115,7 @@ NSArray *WindowDictsForApp(NSRunningApplication *process) {
     return [[appWindowDicts copy] autorelease];
 }
 
-NSArray *WindowsForApp(NSRunningApplication *process, BOOL appName)
-{
+NSArray *WindowsForApp(NSRunningApplication *process, BOOL appName) {
 	pid_t pid = [process processIdentifier];
     AXUIElementRef appElement = AXUIElementCreateApplication(pid);
     NSArray *appWindows = nil;
@@ -127,8 +126,7 @@ NSArray *WindowsForApp(NSRunningApplication *process, BOOL appName)
     [appWindows enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(id aWindow, NSUInteger idx, BOOL *stop) {
         NSString *windowTitle = nil;
         AXUIElementCopyAttributeValue((AXUIElementRef)aWindow, kAXTitleAttribute, (CFTypeRef *)&windowTitle);
-        if (windowTitle) {
-        [windowTitle autorelease];
+        if (windowTitle && windowTitle.length) {
             QSObject *object = [QSObject objectForWindow:aWindow name:windowTitle process:process appWindows:appWindowDicts];
             if (object) {
                 if (appName) [object setName:[windowTitle stringByAppendingFormat:@" (%@)",[process localizedName]]];
@@ -136,6 +134,7 @@ NSArray *WindowsForApp(NSRunningApplication *process, BOOL appName)
                 [windowObjects addObject:object];
             }
         }
+        [windowTitle release];
     }];
     for (id aWindow in appWindows) {
 
