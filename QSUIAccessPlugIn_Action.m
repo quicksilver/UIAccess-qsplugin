@@ -118,6 +118,9 @@ NSArray *WindowDictsForApp(NSRunningApplication *process) {
 NSArray *WindowsForApp(NSRunningApplication *process, BOOL appName) {
 	pid_t pid = [process processIdentifier];
     AXUIElementRef appElement = AXUIElementCreateApplication(pid);
+    if (!appElement) {
+        return nil;
+    }
     NSArray *appWindows = nil;
     AXUIElementCopyAttributeValue(appElement, kAXWindowsAttribute, (CFTypeRef *)&appWindows);
     CFRelease(appElement);
@@ -169,6 +172,10 @@ NSArray *WindowsForApp(NSRunningApplication *process, BOOL appName) {
         process = [NSRunningApplication runningApplicationWithProcessIdentifier:[[process objectForKey:@"NSApplicationProcessIdentifier"] intValue]];
     }
     AXUIElementRef appElement = AXUIElementCreateApplication([process processIdentifier]);
+    if (!appElement) {
+        QSShowAppNotifWithAttributes(QSUIAccessPlugIn_Type, NSLocalizedStringFromTableInBundle(@"UI Access Error", nil, [NSBundle bundleForClass:[self class]], nil), [NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Unable to get focused window for %@", nil, [NSBundle bundleForClass:[self class]], nil), [process localizedName]]);
+        return nil;
+    }
     id focusedWindow = nil;
     AXUIElementCopyAttributeValue(appElement, kAXFocusedWindowAttribute, (CFTypeRef *)&focusedWindow);
     CFRelease(appElement);
@@ -259,9 +266,15 @@ void PressButtonInWindow(id buttonName, id window) {
     NSMutableArray *menus = [NSMutableArray array];
     for (NSRunningApplication *process in launchedApps) {
         AXUIElementRef app = AXUIElementCreateApplication([process processIdentifier]);
+        if (!app) {
+            continue;
+        }
         AXUIElementRef menuBar;
         AXUIElementCopyAttributeValue(app, kAXMenuBarAttribute, (CFTypeRef *)&menuBar);
         CFRelease(app);
+        if (!menuBar) {
+            continue;
+        }
         QSObject *object = [QSObject objectByMergingObjects:MenuItemsForElement(menuBar, 6, nil, nil, 2, process)];
         CFRelease(menuBar);
         [object setName:[process localizedName]];
@@ -370,17 +383,31 @@ void PressButtonInWindow(id buttonName, id window) {
 
 - (QSObject *)currentDocumentForApp:(QSObject *)appObject
 {
-  NSDictionary *process = [[self resolvedProxy:appObject] objectForType:QSProcessType];
-  pid_t pid = [[process objectForKey:@"NSApplicationProcessIdentifier"] intValue];
-  AXUIElementRef app = AXUIElementCreateApplication(pid);
-  AXUIElementRef window = nil;
-  AXUIElementCopyAttributeValue(app, kAXFocusedWindowAttribute, (CFTypeRef *)&window);
+    
+
+    appObject =  [self resolvedProxy:appObject];
+    id process = [appObject objectForType:QSProcessType];
+    if ([process isKindOfClass:[NSDictionary class]]) {
+        process = [NSRunningApplication runningApplicationWithProcessIdentifier:[[process objectForKey:@"NSApplicationProcessIdentifier"] intValue]];
+    }
+    void (^notifBlock)(void) = ^{
+        QSShowAppNotifWithAttributes(QSUIAccessPlugIn_Type, NSLocalizedStringFromTableInBundle(@"No Current Document", nil, [NSBundle bundleForClass:[self class]], nil), [NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Unable to select current document from %@", nil, [NSBundle bundleForClass:[self class]], nil), [process localizedName]]);
+    };
+    AXUIElementRef app = AXUIElementCreateApplication([process processIdentifier]);
+    AXUIElementRef window = nil;
+    AXUIElementCopyAttributeValue(app, kAXFocusedWindowAttribute, (CFTypeRef *)&window);
     [(id)app release];
-    if ([self firstDocumentObjectForElement:window depth:3 title:nil]) {
-        return [self firstDocumentObjectForElement:window depth:3 title:nil];
+    if (!window) {
+        notifBlock();
+        return nil;
+    }
+    
+    QSObject *document = [self firstDocumentObjectForElement:window depth:3 title:nil];
+    if (!document) {
+        notifBlock();
     }
     CFRelease(window);
-    return nil;
+    return document;
 }
 
 - (QSObject *)firstDocumentObjectForElement:(AXUIElementRef)element depth:(NSInteger)depth title:(NSString *)title
