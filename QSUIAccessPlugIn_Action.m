@@ -76,7 +76,10 @@ NSArray *MenuItemsForElement(AXUIElementRef element, NSInteger depth, NSString *
         // It's a window we're showing the menu items for, so activate that window first (but not the app)
         // Each window may have different menu items, so this is important
         [self activateWindow:[dObject objectForType:kWindowsType] andProcess:nil];
+        NSRunningApplication *process = [dObject objectForType:kWindowsProcessType];
+        dObject = [QSObject fileObjectWithFileURL:[process bundleURL]];
     }
+    
     dObject = [self resolvedProxy:dObject];
     id process = [dObject objectForType:QSProcessType];
     if ([process isKindOfClass:[NSDictionary class]]) {
@@ -366,12 +369,7 @@ void PressButtonInWindow(id buttonName, id window) {
 	return nil;
 }
 
-- (QSObject *)resolvedProxy:(QSObject *)dObject
-{
-    if ([dObject objectForType:kWindowsProcessType]) {
-        NSRunningApplication *process = [dObject objectForType:kWindowsProcessType];
-        return [QSObject fileObjectWithFileURL:[process bundleURL]];
-    }
+- (QSObject *)resolvedProxy:(QSObject *)dObject {
     if ([dObject respondsToSelector:@selector(resolvedObject)]) {
         return [dObject resolvedObject];
     }
