@@ -229,7 +229,7 @@
 			<key>validatesObjects</key>
 			<false/>
 		</dict>
-		<key>UIShowApplication</key>
+		<key>UISelectApplication</key>
 		<dict>
 			<key>actionClass</key>
 			<string>QSUIAccessPlugIn_Action</string>
@@ -242,7 +242,7 @@
 			<key>displaysResult</key>
 			<true/>
 			<key>name</key>
-			<string>Show Application</string>
+			<string>Select Application</string>
 			<key>precedence</key>
 			<integer>1</integer>
 			<key>validatesObjects</key>
