@@ -1,8 +1,8 @@
 ## User Interface Plugin
 
-This plugin adds running applications (processes), application windows, and application menu items to Quicksilver's catalog.
+This plugin adds the ability to search for and manipulate running applications (processes), application windows, and application menu items from Quicksilver.
 
- Access for assistive devices must be enabled in Universal Access pane of System Preferences to use this plugin.
+Access for assistive devices **must** be enabled in 'Universal Access' pane of System Preferences to use this plugin.
 
 ### Processes
 
@@ -22,8 +22,8 @@ Selecting these objects in the second pane causes the third pane to display the 
 
 Windows can also have several actions performed on them:
 
-*   **Show Application** - shows the application for the selected window in Quicksilver
-*   **Activate** – Focuses the window, then makes all windows belonging to the app appear in front of all other windows.
+*   **Select Application** - shows the application for the selected window in Quicksilver
+*   **Activate Window** – Focuses the window, then makes all windows belonging to the app appear in front of all other windows.
 *   **Raise** – Makes the window appear in front of all other windows, without changing which app is focused.
 *   **Close** – The same as pressing the red Close button in the window's title bar.
 *   **Minimize Window** – The same as pressing the amber Minimize button in the window's title bar.
