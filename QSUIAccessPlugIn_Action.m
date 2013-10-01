@@ -459,28 +459,4 @@ void PressButtonInWindow(id buttonName, id window) {
     return nil;
 }
 
-- (void)selectAndDisplayObject:(QSObject *)object
-{
-  if (object) [QSPreferredCommandInterface executePartialCommand:[NSArray arrayWithObject:object]];
-  else NSBeep();
-}
-
-- (QSObject *)fetchCurrentFocusedWindow
-{
-  [self selectAndDisplayObject:[self focusedWindowObject]];
-  return nil;
-}
-
-- (QSObject *)fetchCurrentDocument
-{
-  [self selectAndDisplayObject:[self currentDocumentObject]];
-  return nil;
-}
-
-- (QSObject *)fetchCurrentApp
-{
-  [self selectAndDisplayObject:[self activeAppObject]];
-  return nil;
-}
-
 @end

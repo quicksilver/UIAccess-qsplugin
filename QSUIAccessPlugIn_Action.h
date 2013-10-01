@@ -41,10 +41,6 @@
 - (QSObject *)resolvedProxy:(QSObject *)dObject;
 - (QSObject *)currentDocumentForApp:(QSObject *)appObject;
 - (QSObject *)firstDocumentObjectForElement:(AXUIElementRef)element depth:(NSInteger)depth title:(NSString *)title;
-- (void)selectAndDisplayObject:(QSObject *)object;
-- (QSObject *)fetchCurrentFocusedWindow;
-- (QSObject *)fetchCurrentDocument;
-- (QSObject *)fetchCurrentApp;
 
 @end
 
