@@ -18,6 +18,8 @@
 #define QSUIAccessPlugIn_Type @"QSUIAccessPlugIn_Type"
 @interface QSUIAccessPlugIn_Action : QSActionProvider {}
 
+NSArray *WindowDictsForApp(NSRunningApplication *process);
+
 - (QSObject *)appMenus:(QSObject *)dObject pickItem:(QSObject *)iObject;
 - (QSObject *)searchAppMenus:(QSObject *)dObject;
 - (QSObject *)getWindowsForApp:(QSObject *)dObject;
@@ -41,10 +43,6 @@
 - (QSObject *)resolvedProxy:(QSObject *)dObject;
 - (QSObject *)currentDocumentForApp:(QSObject *)appObject;
 - (QSObject *)firstDocumentObjectForElement:(AXUIElementRef)element depth:(NSInteger)depth title:(NSString *)title;
-- (void)selectAndDisplayObject:(QSObject *)object;
-- (QSObject *)fetchCurrentFocusedWindow;
-- (QSObject *)fetchCurrentDocument;
-- (QSObject *)fetchCurrentApp;
 
 @end
 
