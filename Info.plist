@@ -19,7 +19,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>2.2.0</string>
 	<key>CFBundleVersion</key>
-	<string>231</string>
+	<string>245</string>
 	<key>NSPrincipalClass</key>
 	<string>QSUIAccessPlugIn</string>
 	<key>QSActions</key>
@@ -401,6 +401,8 @@ To better indicate where Menu Items have come from, their details will show the 
 		</dict>
 		<key>QSObjectHandlers</key>
 		<dict>
+			<key>WindowsType</key>
+			<string>QSUIAccessPlugIn_Source</string>
 			<key>qs.ui.action</key>
 			<string>QSUIAccessPlugIn_Source</string>
 			<key>qs.ui.element</key>

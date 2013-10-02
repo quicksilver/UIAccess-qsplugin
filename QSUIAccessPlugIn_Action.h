@@ -18,6 +18,8 @@
 #define QSUIAccessPlugIn_Type @"QSUIAccessPlugIn_Type"
 @interface QSUIAccessPlugIn_Action : QSActionProvider {}
 
+NSArray *WindowDictsForApp(NSRunningApplication *process);
+
 - (QSObject *)appMenus:(QSObject *)dObject pickItem:(QSObject *)iObject;
 - (QSObject *)searchAppMenus:(QSObject *)dObject;
 - (QSObject *)getWindowsForApp:(QSObject *)dObject;

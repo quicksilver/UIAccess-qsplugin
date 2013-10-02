@@ -16,7 +16,53 @@
 // Object Handler Methods
 
 - (void)setQuickIconForObject:(QSObject *)object{
-    [object setIcon:[QSResourceManager imageNamed:@"Object"]]; // An icon that is either already in memory or easy to load
+    if ([[object primaryType] isEqualToString:kWindowsType]) {
+        [object setIcon:[QSResourceManager imageNamed:@"WindowIcon"]];
+    } else {
+        [object setIcon:[QSResourceManager imageNamed:@"Object"]]; // An icon that is either already in memory or easy to load
+    }
+}
+
+-(BOOL)loadIconForObject:(QSObject *)object {
+    if (![[object primaryType] isEqualToString:kWindowsType]) {
+        // other types don't have fancy icons (quick icon will do)
+        return YES;
+    }
+    NSRunningApplication *process = [object objectForType:kWindowsProcessType];
+    NSArray *appWindowDicts = WindowDictsForApp(process);
+    SInt32 windowID = [object objectForCache:kWindowID] != nil ? [(NSNumber*)[object objectForCache:kWindowID] intValue] : -1;
+    for (NSDictionary *info in appWindowDicts) {
+        if (windowID != -1) {
+                if ([[info objectForKey:(NSString *)kCGWindowNumber] intValue] != windowID) {
+                    continue;
+                }
+                // It's possible the window name has changed (e.g. in because we have changed its content)
+                [object setName:(NSString*)[info objectForKey:(NSString *)kCGWindowName]];
+        } else {
+            NSString *windowName = (NSString*)[info objectForKey:(NSString *)kCGWindowName];
+            if (!windowName || [windowName localizedCompare:[object name]] != 0) {
+                continue;
+            }
+        }
+        CGRect bounds;
+        CGRectMakeWithDictionaryRepresentation((CFDictionaryRef)[info objectForKey:(NSString *)kCGWindowBounds],&bounds);
+        if (bounds.size.width < 1 || bounds.size.height < 1) {
+            continue;
+        }
+        
+        CGImageRef windowImage = CGWindowListCreateImage(CGRectNull, kCGWindowListOptionIncludingWindow, [[info objectForKey:(NSString*)kCGWindowNumber] unsignedIntValue], kCGWindowImageBoundsIgnoreFraming);
+        if (!windowImage) {
+            continue;
+        }
+        if (![object objectForCache:kWindowID]) {
+            [object setObject:[info objectForKey:(NSString *)kCGWindowNumber] forCache:kWindowID];
+        }
+        NSImage *icon = [[NSImage alloc] initWithCGImage:windowImage size:NSZeroSize];
+        [object setIcon:icon];
+        [icon release];
+        CGImageRelease(windowImage);
+        break;
+    }
 }
 
 - (BOOL)objectHasChildren:(QSObject *)object{
@@ -108,34 +154,9 @@ QSObject * QSObjectForAXUIElementWithNameProcessType(id element, NSString *name,
 @end
 
 @implementation QSObject (Windows)
-+ (QSObject *)objectForWindow:(id)element name:(NSString *)name process:(NSRunningApplication *)process appWindows:(NSArray *)appWindows
-{
++ (QSObject *)objectForWindow:(id)element name:(NSString *)name process:(NSRunningApplication *)process appWindows:(NSArray *)appWindows {
     QSObject *object = QSObjectForAXUIElementWithNameProcessType(element, name, nil, process, kWindowsType);
-    for (NSDictionary *info in appWindows) {
-        NSString *windowName = (NSString*)[info objectForKey:(NSString *)kCGWindowName];
-        if (!windowName) continue;
-        if ([windowName localizedCompare:[object name]] != 0) continue;
-        CGRect bounds;
-        CGRectMakeWithDictionaryRepresentation((CFDictionaryRef)[info objectForKey:(NSString *)kCGWindowBounds],&bounds);
-        if (bounds.size.width < 1 || bounds.size.height < 1) {
-            continue;
-        }
-        
-        CGImageRef windowImage = CGWindowListCreateImage(CGRectNull, kCGWindowListOptionIncludingWindow, [[info objectForKey:(NSString*)kCGWindowNumber] unsignedIntValue], kCGWindowImageBoundsIgnoreFraming);
-        if (!windowImage) {
-            continue;
-        }
-        NSImage *icon = [[NSImage alloc] initWithCGImage:windowImage size:NSZeroSize];
-        [object setIcon:icon];
-        [icon release];
-        CGImageRelease(windowImage);
-        break;
-    }
-    
-    if (![object icon]) {
-        [object setIcon:[QSResourceManager imageNamed:@"WindowIcon"]];
-    }
-    
+    [object setPrimaryType:kWindowsType];
     return object;
 }
 @end

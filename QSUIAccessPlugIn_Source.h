@@ -8,6 +8,7 @@
 
 #import "QSUIAccessPlugIn_Source.h"
 #define kWindowsType @"WindowsType"
+#define kWindowID @"WindowID"
 
 @interface QSUIAccessPlugIn_Source : NSObject {}
 - (NSString *)identifierForObject:(id <QSObject>)object;
