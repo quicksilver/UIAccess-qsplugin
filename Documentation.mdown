@@ -20,7 +20,7 @@ Selecting these objects in the second pane causes the third pane to display the 
 
 ### Windows
 
-Windows can also have several actions performed on them:
+Windows can also have several actions performed on them (you can view a full list in the [Actions preferences](qs://preferences#QSActionsPrefPane) by selecting 'Application Windows' from the dropdown types list). Several of the actions also have alternate actions (which can be executed with ⌘↩), you can see these in the same place in the Actions preferences:
 
 *   **Select Application** - shows the application for the selected window in Quicksilver
 *   **Activate Window** – Focuses the window, then makes all windows belonging to the app appear in front of all other windows.

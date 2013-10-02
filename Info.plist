@@ -19,7 +19,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>2.2.0</string>
 	<key>CFBundleVersion</key>
-	<string>226</string>
+	<string>231</string>
 	<key>NSPrincipalClass</key>
 	<string>QSUIAccessPlugIn</string>
 	<key>QSActions</key>
@@ -30,6 +30,8 @@
 			<string>QSUIAccessPlugIn_Action</string>
 			<key>actionSelector</key>
 			<string>activateWindow:</string>
+			<key>alternateAction</key>
+			<string>CloseWindow</string>
 			<key>directTypes</key>
 			<array>
 				<string>WindowsType</string>
@@ -47,6 +49,8 @@
 			<string>QSUIAccessPlugIn_Action</string>
 			<key>actionSelector</key>
 			<string>closeWindow:</string>
+			<key>alternateAction</key>
+			<string>ActivateWindow</string>
 			<key>directTypes</key>
 			<array>
 				<string>WindowsType</string>
@@ -128,6 +132,8 @@
 			<string>QSUIAccessPlugIn_Action</string>
 			<key>actionSelector</key>
 			<string>minimizeWindow:</string>
+			<key>alternateAction</key>
+			<string>ZoomWindow</string>
 			<key>directTypes</key>
 			<array>
 				<string>WindowsType</string>
@@ -218,6 +224,8 @@
 			<string>QSUIAccessPlugIn_Action</string>
 			<key>actionSelector</key>
 			<string>raiseWindow:</string>
+			<key>alternateAction</key>
+			<string>CloseWindow</string>
 			<key>directTypes</key>
 			<array>
 				<string>WindowsType</string>
@@ -254,6 +262,8 @@
 			<string>QSUIAccessPlugIn_Action</string>
 			<key>actionSelector</key>
 			<string>zoomWindow:</string>
+			<key>alternateAction</key>
+			<string>MinimizeWindow</string>
 			<key>directTypes</key>
 			<array>
 				<string>WindowsType</string>
@@ -294,7 +304,7 @@
 &lt;li&gt;&lt;strong&gt;Menu Bar Items…&lt;/strong&gt; – Generates a searchable list of the app's menu items. Pressing return on one of these menu items is equivalent to using the Press action on it.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3&gt;Windows&lt;/h3&gt;
-&lt;p&gt;Windows can also have several actions performed on them:&lt;/p&gt;
+&lt;p&gt;Windows can also have several actions performed on them (you can view a full list in the &lt;a href="qs://preferences#QSActionsPrefPane"&gt;Actions preferences&lt;/a&gt; by selecting 'Application Windows' from the dropdown types list). Several of the actions also have alternate actions (which can be executed with ⌘↩), you can see these in the same place in the Actions preferences:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;Select Application&lt;/strong&gt; - shows the application for the selected window in Quicksilver&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Activate Window&lt;/strong&gt; – Focuses the window, then makes all windows belonging to the app appear in front of all other windows.&lt;/li&gt;
@@ -434,6 +444,16 @@ To better indicate where Menu Items have come from, their details will show the 
 				<string>UniversalAccessPref</string>
 				<key>name</key>
 				<string>UI Access</string>
+			</dict>
+		</dict>
+		<key>QSTypeDefinitions</key>
+		<dict>
+			<key>WindowsType</key>
+			<dict>
+				<key>icon</key>
+				<string>WindowIcon</string>
+				<key>name</key>
+				<string>Application Windows</string>
 			</dict>
 		</dict>
 	</dict>
