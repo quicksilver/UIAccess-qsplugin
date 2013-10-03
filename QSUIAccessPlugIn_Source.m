@@ -61,8 +61,9 @@
         [object setIcon:icon];
         [icon release];
         CGImageRelease(windowImage);
-        break;
+        return YES;
     }
+    return NO;
 }
 
 - (BOOL)objectHasChildren:(QSObject *)object{
