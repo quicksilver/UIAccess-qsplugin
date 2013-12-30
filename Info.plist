@@ -17,9 +17,9 @@
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.2.0</string>
+	<string>2.2.1</string>
 	<key>CFBundleVersion</key>
-	<string>246</string>
+	<string>247</string>
 	<key>NSPrincipalClass</key>
 	<string>QSUIAccessPlugIn</string>
 	<key>QSActions</key>
@@ -488,36 +488,6 @@ To better indicate where Menu Items have come from, their details will show the 
 			<string>ShowAllAppWindowsCommand</string>
 			<key>command</key>
 			<string>ShowAllAppWindowsCommand</string>
-			<key>set</key>
-			<string>UI Access</string>
-			<key>type</key>
-			<string>QSHotKeyTrigger</string>
-		</dict>
-		<dict>
-			<key>ID</key>
-			<string>CurrentApplicationCommand</string>
-			<key>command</key>
-			<string>CurrentApplicationCommand</string>
-			<key>set</key>
-			<string>UI Access</string>
-			<key>type</key>
-			<string>QSHotKeyTrigger</string>
-		</dict>
-		<dict>
-			<key>ID</key>
-			<string>CurrentDocumentCommand</string>
-			<key>command</key>
-			<string>CurrentDocumentCommand</string>
-			<key>set</key>
-			<string>UI Access</string>
-			<key>type</key>
-			<string>QSHotKeyTrigger</string>
-		</dict>
-		<dict>
-			<key>ID</key>
-			<string>CurrentFocusedWindowCommand</string>
-			<key>command</key>
-			<string>CurrentFocusedWindowCommand</string>
 			<key>set</key>
 			<string>UI Access</string>
 			<key>type</key>
