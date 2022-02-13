@@ -31,28 +31,29 @@
     NSRunningApplication *process = [object objectForType:kWindowsProcessType];
     NSArray *appWindowDicts = WindowDictsForApp(process);
     SInt32 windowID = [object objectForCache:kWindowID] != nil ? [(NSNumber*)[object objectForCache:kWindowID] intValue] : -1;
-    for (NSDictionary *info in appWindowDicts) {
-        if (windowID != -1) {
+	BOOL __block successful = NO;
+	[appWindowDicts enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(NSDictionary *info, NSUInteger idx, BOOL * _Nonnull stop) {
+		if (windowID != -1) {
                 if ([[info objectForKey:(NSString *)kCGWindowNumber] intValue] != windowID) {
-                    continue;
+                    return;
                 }
                 // It's possible the window name has changed (e.g. in because we have changed its content)
                 [object setName:(NSString*)[info objectForKey:(NSString *)kCGWindowName]];
         } else {
             NSString *windowName = (NSString*)[info objectForKey:(NSString *)kCGWindowName];
             if (!windowName || [windowName localizedCompare:[object name]] != 0) {
-                continue;
+                return;
             }
         }
         CGRect bounds;
         CGRectMakeWithDictionaryRepresentation((CFDictionaryRef)[info objectForKey:(NSString *)kCGWindowBounds],&bounds);
         if (bounds.size.width < 1 || bounds.size.height < 1) {
-            continue;
+            return;
         }
         
         CGImageRef windowImage = CGWindowListCreateImage(CGRectNull, kCGWindowListOptionIncludingWindow, [[info objectForKey:(NSString*)kCGWindowNumber] unsignedIntValue], kCGWindowImageBoundsIgnoreFraming);
         if (!windowImage) {
-            continue;
+            return;
         }
         if (![object objectForCache:kWindowID]) {
             [object setObject:[info objectForKey:(NSString *)kCGWindowNumber] forCache:kWindowID];
@@ -61,9 +62,11 @@
         [object setIcon:icon];
         [icon release];
         CGImageRelease(windowImage);
-        return YES;
-    }
-    return NO;
+        *stop = YES;
+		successful = YES;
+		return;
+	}];
+    return successful;
 }
 
 - (BOOL)objectHasChildren:(QSObject *)object{
