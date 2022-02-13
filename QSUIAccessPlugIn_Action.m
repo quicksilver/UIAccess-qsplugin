@@ -110,11 +110,12 @@ NSArray *WindowDictsForApp(NSRunningApplication *process) {
     // get a list of this application's windows
     CFArrayRef windows = CGWindowListCopyWindowInfo(kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements, kCGNullWindowID);
     __block NSMutableArray *appWindowDicts = [NSMutableArray array];
-    [(NSArray *)windows enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(NSDictionary *info, NSUInteger idx, BOOL *stop) {
+    [(NSArray *)windows enumerateObjectsUsingBlock:^(NSDictionary *info, NSUInteger idx, BOOL *stop) {
         if ([(NSNumber *)[info objectForKey:(NSString *)kCGWindowOwnerPID] intValue] == [process processIdentifier]) {
             [appWindowDicts addObject:info];
         }
     }];
+	CFRelease(windows);
     return [[appWindowDicts copy] autorelease];
 }
 
@@ -129,7 +130,7 @@ NSArray *WindowsForApp(NSRunningApplication *process, BOOL appName) {
     CFRelease(appElement);
     __block NSMutableArray *windowObjects = [NSMutableArray array];
     NSArray *appWindowDicts = WindowDictsForApp(process);
-    [appWindows enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(id aWindow, NSUInteger idx, BOOL *stop) {
+    [appWindows enumerateObjectsUsingBlock:^(id aWindow, NSUInteger idx, BOOL *stop) {
         NSString *windowTitle = nil;
         AXUIElementCopyAttributeValue((AXUIElementRef)aWindow, kAXTitleAttribute, (CFTypeRef *)&windowTitle);
         if (windowTitle && windowTitle.length) {
@@ -142,9 +143,6 @@ NSArray *WindowsForApp(NSRunningApplication *process, BOOL appName) {
         }
         [windowTitle release];
     }];
-    for (id aWindow in appWindows) {
-
-    }
     [appWindows release];
     return windowObjects;
 }
@@ -267,23 +265,23 @@ void PressButtonInWindow(id buttonName, id window) {
 {
     NSArray *launchedApps = [[NSWorkspace sharedWorkspace] runningApplications];
     NSMutableArray *menus = [NSMutableArray array];
-    for (NSRunningApplication *process in launchedApps) {
-        AXUIElementRef app = AXUIElementCreateApplication([process processIdentifier]);
-        if (!app) {
-            continue;
-        }
-        AXUIElementRef menuBar;
-        AXUIElementCopyAttributeValue(app, kAXMenuBarAttribute, (CFTypeRef *)&menuBar);
-        CFRelease(app);
-        if (!menuBar) {
-            continue;
-        }
-        QSObject *object = [QSObject objectByMergingObjects:MenuItemsForElement(menuBar, 6, nil, nil, 2, process)];
-        CFRelease(menuBar);
-        [object setName:[process localizedName]];
-        [object setIcon:[process icon]];
-        [menus addObject:object];
-    }
+	[launchedApps enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(NSRunningApplication *process, NSUInteger idx, BOOL * _Nonnull stop) {
+		AXUIElementRef app = AXUIElementCreateApplication([process processIdentifier]);
+		if (!app) {
+			return;
+		}
+		AXUIElementRef menuBar;
+		AXUIElementCopyAttributeValue(app, kAXMenuBarAttribute, (CFTypeRef *)&menuBar);
+		CFRelease(app);
+		if (!menuBar) {
+			return;
+		}
+		QSObject *object = [QSObject objectByMergingObjects:MenuItemsForElement(menuBar, 6, nil, nil, 2, process)];
+		CFRelease(menuBar);
+		[object setName:[process localizedName]];
+		[object setIcon:[process icon]];
+		[menus addObject:object];
+	}];
 	[QSPreferredCommandInterface showArray:menus];
 	return nil;
 }
