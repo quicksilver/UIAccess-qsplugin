@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "8D1AC9600486D14A00FE50C9"
-               BuildableName = "UI Access.bundle"
+               BuildableName = "UI Access.qsplugin"
                BlueprintName = "UI Access"
                ReferencedContainer = "container:QSUIAccessPlugIn.xcodeproj">
             </BuildableReference>
@@ -31,7 +31,7 @@
       </Testables>
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Debug"
+      buildConfiguration = "Release"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       enableAddressSanitizer = "YES"
@@ -62,7 +62,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "8D1AC9600486D14A00FE50C9"
-            BuildableName = "UI Access.bundle"
+            BuildableName = "UI Access.qsplugin"
             BlueprintName = "UI Access"
             ReferencedContainer = "container:QSUIAccessPlugIn.xcodeproj">
          </BuildableReference>
