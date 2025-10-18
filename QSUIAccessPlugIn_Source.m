@@ -139,7 +139,7 @@ QSObject * QSObjectForAXUIElementWithNameProcessType(id element, NSString *name,
         [object setName:name];
     }
     // give items an identifier, so mnemonics can be saved
-    [object setIdentifier:[NSString stringWithFormat:@"bundle:%@:name:%@", [process bundleIdentifier], name]];
+    [object setIdentifier:[NSString stringWithFormat:@"bundle:%@:name:%@ ▸ %@", [process bundleIdentifier], parentName, name]];
 	[object setObject:element forType:type];
     [object setPrimaryType:type];
 	[object setObject:process forType:kWindowsProcessType];
