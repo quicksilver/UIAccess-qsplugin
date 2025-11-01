@@ -29,27 +29,74 @@ NSArray *MenuItemsForElement(AXUIElementRef element, NSInteger depth, NSString *
     NSMutableOrderedSet *menuItems = [NSMutableOrderedSet new];
     NSString *_parentName = nil;
     AXUIElementCopyAttributeValue(element, kAXTitleAttribute, (CFTypeRef *)&_parentName);
+
     @autoreleasepool {
+        // Track the last disabled item as a potential section header
+        NSString *currentSectionHeader = nil;
+
         for (id child in children) {
+					NSString *name = nil;
+					// try not to get the name attribute and test it unless we really have to
+					if (AXUIElementCopyAttributeValue((AXUIElementRef)child, kAXTitleAttribute, (CFTypeRef *)&name) == kAXErrorSuccess)
+					{
+							[name autorelease];
+# warning "Comparing name equality in English only will break localised apps"
+							if ([name isEqualToString:@"Apple"] || [name isEqualToString:@"Services"])
+							{
+									continue;
+							}
+					}
+					
+					NSString *identifier = nil;
+					AXUIElementCopyAttributeValue((AXUIElementRef)child, kAXIdentifierAttribute, (CFTypeRef *)&identifier);
+					[identifier autorelease];
+
             CFTypeRef enabled = NULL;
             if (AXUIElementCopyAttributeValue((AXUIElementRef)child, kAXEnabledAttribute, &enabled) != kAXErrorSuccess) continue;
             [(id)enabled autorelease];
+
+            // Handle disabled items as potential section headers
             if (!CFBooleanGetValue(enabled)) {
+                // Only treat as section header if it has a known identifier pattern
+                BOOL isSectionHeader = NO;
+                if (identifier != nil && name != nil && [name length] > 0) {
+                    // Check for known identifier patterns where section headers appear
+                    if ([identifier containsString:@"mailboxesChooserMenu"] ||
+                        [identifier containsString:@"mailboxMenuItem"]) {
+                        isSectionHeader = YES;
+                    }
+                }
+
+                if (isSectionHeader) {
+                    // Store this as the current section header for subsequent items
+                    currentSectionHeader = name;
+                }
+                // Skip disabled items - they won't be in the final menu
                 continue;
             }
 
-            NSString *name = nil;
-            // try not to get the name attribute and test it unless we really have to
-            if (AXUIElementCopyAttributeValue((AXUIElementRef)child, kAXTitleAttribute, (CFTypeRef *)&name) == kAXErrorSuccess)
-            {
-                [name autorelease];
-# warning "Comparing name equality in English only will break localised apps"
-                if ([name isEqualToString:@"Apple"] || [name isEqualToString:@"Services"])
-                {
-                    continue;
+            // Check if this enabled item has children (indicating it's a parent/submenu)
+            NSArray *childrenCheck = nil;
+            AXUIElementCopyAttributeValue((AXUIElementRef)child, kAXChildrenAttribute, (CFTypeRef *)&childrenCheck);
+            BOOL hasChildren = [childrenCheck count] > 0;
+            [childrenCheck release];
+
+            // For enabled items, build the parent path including any section header
+            NSString *effectiveParentName;
+            if (currentSectionHeader != nil && !hasChildren) {
+                // Include the section header in the parent path
+                // But only if this item doesn't have children (not a parent item itself)
+                NSString *baseParent = _parentName != nil ? (parentName != nil ? [NSString stringWithFormat:@"%@ ▸ %@", parentName, _parentName] : _parentName) : parentName;
+                effectiveParentName = baseParent != nil ? [NSString stringWithFormat:@"%@ ▸ %@", baseParent, currentSectionHeader] : currentSectionHeader;
+            } else {
+                effectiveParentName = _parentName != nil ? (parentName != nil ? [NSString stringWithFormat:@"%@ ▸ %@", parentName, _parentName] : _parentName) : parentName;
+                // Clear section header if this item has children (it's a new parent section)
+                if (hasChildren) {
+                    currentSectionHeader = nil;
                 }
             }
-            [menuItems addObjectsFromArray:MenuItemsForElement((AXUIElementRef)child, depth - 1, name, _parentName != nil ? (parentName != nil ? [NSString stringWithFormat:@"%@ ▸ %@", parentName, _parentName] : _parentName) : parentName, menuIgnoreDepth - 1, process)];
+
+            [menuItems addObjectsFromArray:MenuItemsForElement((AXUIElementRef)child, depth - 1, name, effectiveParentName, menuIgnoreDepth - 1, process)];
         }
     }
     [_parentName release];

@@ -10,7 +10,7 @@
 
 @implementation QSUIAccessPlugIn_Source
 - (NSString *)identifierForObject:(id <QSObject>)object{
-  return nil;
+	return [object identifier];
 }
 
 // Object Handler Methods
@@ -139,7 +139,13 @@ QSObject * QSObjectForAXUIElementWithNameProcessType(id element, NSString *name,
         [object setName:name];
     }
     // give items an identifier, so mnemonics can be saved
-    [object setIdentifier:[NSString stringWithFormat:@"bundle:%@:name:%@ ▸ %@", [process bundleIdentifier], parentName, name]];
+	NSString *elementIdentifier = nil;
+	if (AXUIElementCopyAttributeValue((AXUIElementRef)element, kAXIdentifierAttribute, (CFTypeRef *)&elementIdentifier) == kAXErrorSuccess) {
+		[elementIdentifier autorelease];
+	} else {
+		elementIdentifier = [NSString stringWithFormat:@"%@ ▸ %@", parentName, name];
+	}
+    [object setIdentifier:[NSString stringWithFormat:@"bundle:%@:name:%@ ▸ %@:id:%@", [process bundleIdentifier], parentName, name, elementIdentifier]];
 	[object setObject:element forType:type];
     [object setPrimaryType:type];
 	[object setObject:process forType:kWindowsProcessType];
