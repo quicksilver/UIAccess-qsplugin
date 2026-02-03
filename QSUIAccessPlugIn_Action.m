@@ -453,13 +453,31 @@ void PressButtonInWindow(id buttonName, id window) {
     return document;
 }
 
+- (QSObject *)objectFromDocumentAttribute:(NSString *)path {
+	if (!path || !path.length) {
+		return nil;
+	}
+	// check if it's a valid path (exists)
+	if ([[NSFileManager defaultManager] fileExistsAtPath:[path stringByExpandingTildeInPath]]) {
+		return [QSObject fileObjectWithPath:[[NSURL URLWithString:path] path]];
+	} else if ([NSURL URLWithString:path]) {
+		// consider it as a normal URL
+		return [QSObject URLObjectWithURL:path title:nil];
+	}
+	return nil;
+}
+
 - (QSObject *)firstDocumentObjectForElement:(AXUIElementRef)element depth:(NSInteger)depth title:(NSString *)title
 {
+	QSObject *object = nil;
     if (depth != 0) {
         NSString *currentPath = nil;
         AXUIElementCopyAttributeValue(element, kAXDocumentAttribute, (CFTypeRef *)&currentPath);
         [currentPath autorelease];
-        if (currentPath) return [QSObject fileObjectWithPath:[[NSURL URLWithString:currentPath] path]];
+			object = [self objectFromDocumentAttribute:currentPath];
+			if (object) {
+				return object;
+			}
         
         if (!title)
         {
@@ -472,33 +490,121 @@ void PressButtonInWindow(id buttonName, id window) {
         [currentURL autorelease];
         if (currentURL)
         {
-            if ([currentURL isFileURL]) return [QSObject fileObjectWithPath:[currentURL path]];
-            return [QSObject URLObjectWithURL:[currentURL description] title:title];
+					object = [self objectFromDocumentAttribute:[currentURL path]];
+					if (object) {
+						return object;
+					}
         }
         
         NSArray *children = nil;
         AXUIElementCopyAttributeValue(element, kAXChildrenAttribute, (CFTypeRef *)&children);
         [children autorelease];
         if ([children count] == 0) return nil;
+        
+        // First pass: check immediate children for standard attributes
         for (id child in children)
         {
             AXUIElementCopyAttributeValue((AXUIElementRef)child, kAXDocumentAttribute, (CFTypeRef *)&currentPath);
             [currentPath autorelease];
-            if (currentPath) return [QSObject fileObjectWithPath:[[NSURL URLWithString:currentPath] path]];
+					object = [self objectFromDocumentAttribute:currentPath];
+					if (object) {
+						return object;
+					}
             
             AXUIElementCopyAttributeValue((AXUIElementRef)child, kAXURLAttribute, (CFTypeRef *)&currentURL);
             [currentURL autorelease];
             if (currentURL)
             {
-                if ([currentURL isFileURL]) return [QSObject fileObjectWithPath:[currentURL path]];
-                return [QSObject URLObjectWithURL:[currentURL description] title:title];
+							object = [self objectFromDocumentAttribute:currentPath];
+							if (object) {
+								return object;
+							}
             }
-            
-            QSObject *childDoc = [self firstDocumentObjectForElement:(AXUIElementRef)child depth:depth - 1 title:title];
-            if (childDoc) return childDoc;
+					
         }
+        
+        // Second pass: search deeply for file paths in titles/labels (for Electron apps like VSCode)
+        QSObject *deepDoc = [self searchDeepForFilePathInElement:element maxDepth:30];
+        if (deepDoc) return deepDoc;
+			
+			for (id child in children) {
+				QSObject *childDoc = [self firstDocumentObjectForElement:(AXUIElementRef)child depth:depth - 1 title:title];
+				if (childDoc) return childDoc;
+			}
+
     }
     NSBeep();
+    return nil;
+}
+
+- (QSObject *)searchDeepForFilePathInElement:(AXUIElementRef)element maxDepth:(NSInteger)maxDepth
+{
+    if (maxDepth <= 0) return nil;
+    
+    // Check this element's title and label for file paths
+    NSString *titleValue = nil;
+    AXUIElementCopyAttributeValue(element, kAXTitleAttribute, (CFTypeRef *)&titleValue);
+    [titleValue autorelease];
+    
+    QSObject *result = [self extractFilePathFromString:titleValue];
+    if (result) return result;
+    
+    // Also check the label attribute (VSCode uses this for tab labels)
+    NSString *labelValue = nil;
+    AXUIElementCopyAttributeValue(element, kAXDescriptionAttribute, (CFTypeRef *)&labelValue);
+    [labelValue autorelease];
+    
+    result = [self extractFilePathFromString:labelValue];
+    if (result) return result;
+    
+    // Check value attribute as well
+    NSString *valueString = nil;
+    AXUIElementCopyAttributeValue(element, kAXValueAttribute, (CFTypeRef *)&valueString);
+    [valueString autorelease];
+    
+    result = [self extractFilePathFromString:valueString];
+    if (result) return result;
+    
+    // Recurse into children
+    NSArray *children = nil;
+    AXUIElementCopyAttributeValue(element, kAXChildrenAttribute, (CFTypeRef *)&children);
+    [children autorelease];
+    
+    for (id child in children)
+    {
+        result = [self searchDeepForFilePathInElement:(AXUIElementRef)child maxDepth:maxDepth - 1];
+        if (result) return result;
+    }
+    
+    return nil;
+}
+
+- (QSObject *)extractFilePathFromString:(NSString *)string
+{
+    if (![string isKindOfClass:[NSString class]] || !string || string.length == 0) return nil;
+    
+    // VSCode format: "~/path/to/file.ext • 23 problems in this file • Modified"
+    // Extract the part before the first bullet point
+    NSRange bulletRange = [string rangeOfString:@" •"];
+    if (bulletRange.location != NSNotFound) {
+        string = [string substringToIndex:bulletRange.location];
+    }
+    
+    string = [string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    
+    // Check if it looks like a file path (starts with / or ~/)
+    if (![string hasPrefix:@"/"] && ![string hasPrefix:@"~/"]) {
+        return nil;
+    }
+    
+    // Expand tilde
+    NSString *expandedPath = [string stringByExpandingTildeInPath];
+    
+    // Verify the file exists
+    if ([[NSFileManager defaultManager] fileExistsAtPath:expandedPath]) {
+        return [QSObject fileObjectWithPath:expandedPath];
+    }
+    
     return nil;
 }
 
