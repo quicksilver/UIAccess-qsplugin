@@ -596,7 +596,9 @@ void PressButtonInWindow(id buttonName, id window) {
     if (![string hasPrefix:@"/"] && ![string hasPrefix:@"~/"]) {
         return nil;
     }
-    
+	if ([string isEqualToString:@"/"]) {
+		return nil;
+	}
     // Expand tilde
     NSString *expandedPath = [string stringByExpandingTildeInPath];
     
